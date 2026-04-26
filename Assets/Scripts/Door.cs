@@ -1,23 +1,23 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+// using System.Collections;
+// using System.Collections.Generic;
+// using UnityEngine;
 
-public class Door : MonoBehaviour
-{
-    void OnTriggerEnter2D(Collider2D other)
-    {
-        if (other.CompareTag("Player"))
-        {
-            KeyManager km = other.GetComponent<KeyManager>();
-            if (km != null && km.HasAllKeys())
-            {
-                Debug.Log("ÌÓÍÑ³É¹¦£¡");
-                // ÕâÀï¿ÉÒÔ¼ÓÇÐ»»³¡¾°»òÏÔÊ¾Ê¤ÀûUI
-            }
-            else
-            {
-                Debug.Log("Ô¿³×²»×ã£¬ÃÅ´ò²»¿ª£¡");
-            }
-        }
-    }
-}
+// public class Door : MonoBehaviour
+// {
+//     void OnTriggerEnter2D(Collider2D other)
+//     {
+//         if (other.CompareTag("Player"))
+//         {
+//             KeyManager km = other.GetComponent<KeyManager>();
+//             if (km != null && km.HasAllKeys())
+//             {
+//                 Debug.Log("ï¿½ï¿½ï¿½Ñ³É¹ï¿½ï¿½ï¿½");
+//                 // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô¼ï¿½ï¿½Ð»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê¾Ê¤ï¿½ï¿½UI
+//             }
+//             else
+//             {
+//                 Debug.Log("Ô¿ï¿½×²ï¿½ï¿½ã£¬ï¿½Å´ò²»¿ï¿½ï¿½ï¿½");
+//             }
+//         }
+//     }
+// }

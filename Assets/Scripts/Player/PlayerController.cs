@@ -9,6 +9,7 @@ public class PlayerController : MonoBehaviour
     public PlayerInput Input { get; private set; }
     public Rigidbody2D Rigidbody { get; private set; }
     public Transform InteractionIcon { get; private set; }
+    public float KeyNumber { get; private set; } = 0;
 
     [Header("移动设置")]
     [SerializeField] private float moveSpeed = 5f;
@@ -24,6 +25,13 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private BoxCollider2D interactionBox;
 
     [SerializeField] private string bedTag = "Bed";
+    [SerializeField] private string travelBagTag = "TravelBag";
+    [SerializeField] private string doorTag = "Door";
+
+    [Header("门")]
+    [SerializeField, Min(1)] private int keysRequiredToOpenDoor = 3;
+    [Tooltip("开门后门 SpriteRenderer 的透明度。")]
+    [SerializeField, Range(0f, 1f)] private float doorOpenedSpriteAlpha = 0.7f;
 
     // 缓存交互对象
     private GameObject targetObject = null;
@@ -57,6 +65,7 @@ public class PlayerController : MonoBehaviour
     {
         // 读取移动输入，后续在物理帧中统一处理移动和旋转。
         moveInput = Input.PlayerActions.Move.ReadValue<Vector2>();
+        UpdateInteractionIcon();
     }
 
     private void FixedUpdate()
@@ -66,14 +75,19 @@ public class PlayerController : MonoBehaviour
         // ClampToCamera();
     }
 
-    private void OnTriggerEnter2D(Collider2D other)
+    /// <summary>与 <see cref="TryGetObjectInRange"/> 使用同一套范围检测，避免 Trigger 与 Box 不同步导致按键无效。</summary>
+    private void UpdateInteractionIcon()
     {
-        InteractionIcon.gameObject.SetActive(true);
-    }
-    
-    private void OnTriggerExit2D(Collider2D other)
-    {
-        InteractionIcon.gameObject.SetActive(false);
+        if (InteractionIcon == null)
+        {
+            return;
+        }
+
+        bool show = isInteracting
+            || TryGetObjectInRange(bedTag, out _)
+            || TryGetObjectInRange(travelBagTag, out _)
+            || TryGetObjectInRange(doorTag, out _);
+        InteractionIcon.gameObject.SetActive(show);
     }
 
     private void MovePlayer()
@@ -120,7 +134,7 @@ public class PlayerController : MonoBehaviour
     {
         Input.PlayerActions.Interaction.started += OnInteractionStarted;
     }
-    
+
     private void RemoveInputActionCallbacks()
     {
         Input.PlayerActions.Interaction.started -= OnInteractionStarted;
@@ -205,6 +219,53 @@ public class PlayerController : MonoBehaviour
         return false;
     }
 
+    // 与旅行包交互
+    private void InteractWithTravelBag(GameObject travelBag)
+    {
+        var keyT = travelBag.transform.Find("Key");
+        if (keyT == null)
+        {
+            Debug.Log("旅行包没有 Key 子物体");
+            return;
+        }
+
+        if (!keyT.gameObject.activeSelf)
+        {
+            Debug.Log("旅行包没有钥匙");
+            return;
+        }
+
+        keyT.gameObject.SetActive(false);
+        KeyNumber++;
+        Debug.Log("获得钥匙，当前钥匙数量：" + KeyNumber);
+    }
+
+    // 和门交互：需要集齐指定数量钥匙；成功后门半透明并关闭碰撞，避免重复交互。
+    private void InteractWithDoor(GameObject door)
+    {
+        if (KeyNumber < keysRequiredToOpenDoor)
+        {
+            Debug.Log(
+                $"钥匙不足：需要 {keysRequiredToOpenDoor} 把钥匙才能开门，当前有 {KeyNumber:F0} 把。");
+            return;
+        }
+
+        Debug.Log($"集齐了 {keysRequiredToOpenDoor} 把钥匙，门已打开。");
+
+        var sr = door.GetComponentInChildren<SpriteRenderer>(true);
+        if (sr != null)
+        {
+            Color c = sr.color;
+            c.a = doorOpenedSpriteAlpha;
+            sr.color = c;
+        }
+
+        foreach (var col in door.GetComponentsInChildren<Collider2D>(true))
+        {
+            col.enabled = false;
+        }
+    }
+
     #region Input Methods
 
     // 玩家按下交互键时触发的回调方法，可以在这里处理交互逻辑，比如打开门、拾取物品等。
@@ -216,27 +277,38 @@ public class PlayerController : MonoBehaviour
             {
                 return;
             }
+
             ExitInteraction(targetObject);
             targetObject = null;
+            // 同一键按下只处理“钻出”，否则本帧还会继续 TryGet 床，可能马上再次钻进
+            return;
         }
-        // 如果交互图标可见，则触发交互逻辑
-        if (InteractionIcon.gameObject.activeSelf)
+
+        if (TryGetObjectInRange(bedTag, out targetObject))
         {
-            // 尝试获取床
-            if (TryGetObjectInRange(bedTag, out var target))
+            StartInteraction(targetObject);
+            var pointT = targetObject.transform.Find("Point");
+            if (pointT != null)
             {
-                StartInteraction(target);
-                // 获取床的子对象Point
-                GameObject point = target.transform.Find("Point").gameObject;
-                // 玩家躲到指定的床底
-                transform.position = point.transform.position;
-
-
+                transform.position = pointT.position;
             }
+
+            return;
+        }
+
+        if (TryGetObjectInRange(travelBagTag, out targetObject))
+        {
+            InteractWithTravelBag(targetObject);
+            return;
+        }
+
+        if (TryGetObjectInRange(doorTag, out targetObject))
+        {
+            InteractWithDoor(targetObject);
         }
     }
 
-    
+
 
 
     #endregion

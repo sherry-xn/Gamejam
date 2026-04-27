@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+
 public class Key : MonoBehaviour
 {
     private bool isCollected = false; // ����Ƿ���ʰȡ
@@ -22,8 +23,10 @@ public class Key : MonoBehaviour
     //         // GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 0.5f); 
     //     }
     // }
-        // Start is called before the first frame update
-        void Start()
+
+  
+    // Start is called before the first frame update
+    void Start()
     {
         
     }

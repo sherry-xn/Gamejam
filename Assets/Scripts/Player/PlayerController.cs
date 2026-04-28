@@ -1,6 +1,8 @@
 using System;
+using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 [RequireComponent(typeof(PlayerInput))]
 [RequireComponent(typeof(Rigidbody2D))]
@@ -9,7 +11,6 @@ public class PlayerController : MonoBehaviour
     public PlayerInput Input { get; private set; }
     public Rigidbody2D Rigidbody { get; private set; }
     public Transform InteractionIcon { get; private set; }
-    public float KeyNumber { get; private set; } = 0;
 
     [Header("移动设置")]
     [SerializeField] private float moveSpeed = 5f;
@@ -33,12 +34,22 @@ public class PlayerController : MonoBehaviour
     [Tooltip("开门后门 SpriteRenderer 的透明度。")]
     [SerializeField, Range(0f, 1f)] private float doorOpenedSpriteAlpha = 0.7f;
 
+    [field: Header("UI控件")]
+    [field: SerializeField] public Slider HealthBar { get; private set; }
+    [field: SerializeField] public TextMeshProUGUI KeyNumberText { get; private set; }
+
+    [field: Header("玩家数据")]
+    [field: SerializeField] public PlayerInfo Data { get; private set; }
+
     // 缓存交互对象
     private GameObject targetObject = null;
     private Vector2 moveInput;
     private Camera mainCamera;
     private bool isInteracting = false;
     private readonly Collider2D[] interactionOverlapArray = new Collider2D[32];
+
+    public int CurrentHealth { get; private set; }
+    public int CurrentKey { get; private set; }
 
     private void Awake()
     {
@@ -49,6 +60,7 @@ public class PlayerController : MonoBehaviour
         Rigidbody.bodyType = RigidbodyType2D.Dynamic;
         Rigidbody.gravityScale = 0f;
         mainCamera = Camera.main;
+        Initialize();
     }
 
     private void Start()
@@ -73,6 +85,38 @@ public class PlayerController : MonoBehaviour
         MovePlayer();
         RotatePlayer();
         // ClampToCamera();
+    }
+
+
+    public void TakeDamage(int damage = 1)
+    {
+        damage = Mathf.Clamp(damage, 0, CurrentHealth);
+        CurrentHealth -= damage;
+        HealthBar.value *= (float)CurrentHealth / Data.MaxHealth;
+
+        if (CurrentHealth <= 0)
+        {
+            Debug.Log("玩家死亡");
+            return;
+        }
+        else
+        {
+            Debug.Log("玩家受伤，当前生命值：" + CurrentHealth);
+        }
+    }
+
+    public void AddKey(int key = 1)
+    {
+        CurrentKey += key;
+        KeyNumberText.text = CurrentKey.ToString();
+    }
+
+
+    private void Initialize()
+    {
+        CurrentHealth = Data.MaxHealth;
+        CurrentKey = 0;
+        Debug.Log("玩家初始化，当前生命值：" + CurrentHealth + "，当前钥匙数量：" + CurrentKey);
     }
 
     /// <summary>与 <see cref="TryGetObjectInRange"/> 使用同一套范围检测，避免 Trigger 与 Box 不同步导致按键无效。</summary>
@@ -236,17 +280,17 @@ public class PlayerController : MonoBehaviour
         }
 
         keyT.gameObject.SetActive(false);
-        KeyNumber++;
-        Debug.Log("获得钥匙，当前钥匙数量：" + KeyNumber);
+        AddKey();
+        Debug.Log("获得钥匙，当前钥匙数量：" + CurrentKey);
     }
 
     // 和门交互：需要集齐指定数量钥匙；成功后门半透明并关闭碰撞，避免重复交互。
     private void InteractWithDoor(GameObject door)
     {
-        if (KeyNumber < keysRequiredToOpenDoor)
+        if (CurrentKey < keysRequiredToOpenDoor)
         {
             Debug.Log(
-                $"钥匙不足：需要 {keysRequiredToOpenDoor} 把钥匙才能开门，当前有 {KeyNumber:F0} 把。");
+                $"钥匙不足：需要 {keysRequiredToOpenDoor} 把钥匙才能开门，当前有 {CurrentKey:F0} 把。");
             return;
         }
 

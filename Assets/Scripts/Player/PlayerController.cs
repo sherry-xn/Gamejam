@@ -28,6 +28,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private string bedTag = "Bed";
     [SerializeField] private string travelBagTag = "TravelBag";
     [SerializeField] private string doorTag = "Door";
+    [SerializeField] private string wardrobeTag = "Wardrobe";
 
     [Header("门")]
     [SerializeField, Min(1)] private int keysRequiredToOpenDoor = 3;
@@ -108,7 +109,7 @@ public class PlayerController : MonoBehaviour
     public void AddKey(int key = 1)
     {
         CurrentKey += key;
-        KeyNumberText.text = CurrentKey.ToString();
+        KeyNumberText.text = "Key: " + CurrentKey.ToString();
     }
 
 
@@ -130,7 +131,8 @@ public class PlayerController : MonoBehaviour
         bool show = isInteracting
             || TryGetObjectInRange(bedTag, out _)
             || TryGetObjectInRange(travelBagTag, out _)
-            || TryGetObjectInRange(doorTag, out _);
+            || TryGetObjectInRange(doorTag, out _)
+            || TryGetObjectInRange(wardrobeTag, out _);
         InteractionIcon.gameObject.SetActive(show);
     }
 
@@ -331,7 +333,18 @@ public class PlayerController : MonoBehaviour
         if (TryGetObjectInRange(bedTag, out targetObject))
         {
             StartInteraction(targetObject);
-            var pointT = targetObject.transform.Find("Point");
+            var pointT = targetObject.transform.Find("bedPoint");
+            if (pointT != null)
+            {
+                transform.position = pointT.position;
+            }
+
+            return;
+        }
+        if (TryGetObjectInRange(wardrobeTag, out targetObject))
+        {
+            StartInteraction(targetObject);
+            var pointT = targetObject.transform.Find("wardrobePoint");
             if (pointT != null)
             {
                 transform.position = pointT.position;

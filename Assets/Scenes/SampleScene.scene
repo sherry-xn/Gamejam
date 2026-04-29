@@ -1849,7 +1849,7 @@ GameObject:
   m_Layer: 0
   m_HasEditorInfo: 1
   m_Name: Wardrobe
-  m_TagString: Untagged
+  m_TagString: Wardrobe
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1896,7 +1896,7 @@ BoxCollider2D:
   m_CallbackLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeLayer: 0
@@ -1955,7 +1955,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 1
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -1979,7 +1979,8 @@ Transform:
   m_LocalPosition: {x: -0.601645, y: 4.2168097, z: -0.03766207}
   m_LocalScale: {x: 3.4889987, y: 1.1532401, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 1991879601}
   m_Father: {fileID: 2122673107}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1286816524
@@ -2062,7 +2063,7 @@ GameObject:
   - component: {fileID: 1297022563}
   m_Layer: 0
   m_HasEditorInfo: 1
-  m_Name: Point
+  m_Name: bedPoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2283,6 +2284,7 @@ MonoBehaviour:
   bedTag: Bed
   travelBagTag: TravelBag
   doorTag: Door
+  wardrobeTag: Wardrobe
   keysRequiredToOpenDoor: 3
   doorOpenedSpriteAlpha: 0.7
   <HealthBar>k__BackingField: {fileID: 2053367573}
@@ -2494,6 +2496,38 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 814832740}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1991879600
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 7
+  m_Component:
+  - component: {fileID: 1991879601}
+  m_Layer: 0
+  m_HasEditorInfo: 1
+  m_Name: wardrobePoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1991879601
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1991879600}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -0.04, y: -0.07, z: 0}
+  m_LocalScale: {x: 1.0977074, y: 2.2418575, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1215661953}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2053367571
 GameObject:

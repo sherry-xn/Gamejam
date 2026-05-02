@@ -918,11 +918,11 @@ Transform:
   m_GameObject: {fileID: 492114697}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 2.5153444, y: 0.9947136, z: 190.78026}
+  m_LocalPosition: {x: 0.38455296, y: -0.67926985, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1706760278}
+  m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &519420028
 GameObject:
@@ -987,7 +987,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 8.301052
+  orthographic size: 3.1
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -1014,7 +1014,7 @@ Transform:
   m_GameObject: {fileID: 519420028}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -2.1307914, y: -1.6739835, z: -10}
+  m_LocalPosition: {x: -1.848254, y: -1.6736, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -3007,7 +3007,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1706760278}
   - component: {fileID: 1706760277}
-  - component: {fileID: 1706760276}
+  - component: {fileID: 1706760279}
   m_Layer: 0
   m_HasEditorInfo: 1
   m_Name: Virtual Camera
@@ -3016,23 +3016,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1706760276
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1706760275}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a2fba25a5cd15594e8f050a11e386c80, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_ConfineMode: 0
-  m_BoundingVolume: {fileID: 0}
-  m_BoundingShape2D: {fileID: 492114698}
-  m_ConfineScreenEdges: 1
-  m_Damping: 0
 --- !u!114 &1706760277
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3055,7 +3038,7 @@ MonoBehaviour:
   m_Follow: {fileID: 1883391182}
   m_Lens:
     FieldOfView: 60
-    OrthographicSize: 8.301052
+    OrthographicSize: 3.1
     NearClipPlane: 0.3
     FarClipPlane: 1000
     Dutch: 0
@@ -3086,9 +3069,24 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1304029525}
-  - {fileID: 492114699}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1706760279
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1706760275}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f453f694addf4275988fac205bc91968, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_BoundingShape2D: {fileID: 492114698}
+  m_Damping: 0.5
+  m_MaxWindowSize: 0
+  m_Padding: 0
 --- !u!1 &1842875520
 GameObject:
   m_ObjectHideFlags: 0
@@ -3690,3 +3688,4 @@ SceneRoots:
   - {fileID: 265573135}
   - {fileID: 1286816527}
   - {fileID: 1706760278}
+  - {fileID: 492114699}

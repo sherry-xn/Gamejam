@@ -1,0 +1,9 @@
+{
+  "mcp": {
+    "gladekit-unity": {
+      "type": "local",
+      "command": ["uvx", "gladekit-mcp"],
+      "enabled": true
+    }
+  }
+}

@@ -42,6 +42,10 @@ public class PlayerController : MonoBehaviour
     [field: Header("玩家数据")]
     [field: SerializeField] public PlayerInfo Data { get; private set; }
 
+    [Header("2D 平面修正")]
+    [Tooltip("2D 游戏中玩家固定使用的 Z 值，避免启动时被放到错误深度导致看不见。")]
+    [SerializeField] private float fixedWorldZ = 0f;
+
     // 缓存交互对象
     private GameObject targetObject = null;
     private Vector2 moveInput;
@@ -61,6 +65,7 @@ public class PlayerController : MonoBehaviour
         Rigidbody.bodyType = RigidbodyType2D.Dynamic;
         Rigidbody.gravityScale = 0f;
         mainCamera = Camera.main;
+        NormalizeTo2DPlane();
         Initialize();
     }
 
@@ -336,7 +341,7 @@ public class PlayerController : MonoBehaviour
             var pointT = targetObject.transform.Find("bedPoint");
             if (pointT != null)
             {
-                transform.position = pointT.position;
+                SetPlayerPosition(pointT.position);
             }
 
             return;
@@ -347,7 +352,7 @@ public class PlayerController : MonoBehaviour
             var pointT = targetObject.transform.Find("wardrobePoint");
             if (pointT != null)
             {
-                transform.position = pointT.position;
+                SetPlayerPosition(pointT.position);
             }
 
             return;
@@ -362,6 +367,23 @@ public class PlayerController : MonoBehaviour
         if (TryGetObjectInRange(doorTag, out targetObject))
         {
             InteractWithDoor(targetObject);
+        }
+    }
+
+    private void NormalizeTo2DPlane()
+    {
+        SetPlayerPosition(transform.position);
+    }
+
+    private void SetPlayerPosition(Vector3 position)
+    {
+        Vector3 fixedPosition = new Vector3(position.x, position.y, fixedWorldZ);
+        transform.position = fixedPosition;
+
+        // Rigidbody2D 只管理 XY，手动同步一次避免 Transform / Rigidbody 状态不一致。
+        if (Rigidbody != null)
+        {
+            Rigidbody.position = fixedPosition;
         }
     }
 

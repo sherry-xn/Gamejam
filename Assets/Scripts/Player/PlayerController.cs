@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -48,6 +49,7 @@ public class PlayerController : MonoBehaviour
     private Camera mainCamera;
     private bool isInteracting = false;
     private readonly Collider2D[] interactionOverlapArray = new Collider2D[32];
+    private readonly HashSet<int> openedDoorIds = new HashSet<int>();
 
     public int CurrentHealth { get; private set; }
     public int CurrentKey { get; private set; }
@@ -286,9 +288,19 @@ public class PlayerController : MonoBehaviour
         Debug.Log("获得钥匙，当前钥匙数量：" + CurrentKey);
     }
 
-    // 和门交互：需要集齐指定数量钥匙；成功后门半透明并关闭碰撞，避免重复交互。
+    // 和门交互：按同一交互键切换开/关门。
     private void InteractWithDoor(GameObject door)
     {
+        int doorId = door.GetInstanceID();
+        bool isOpened = openedDoorIds.Contains(doorId);
+        if (isOpened)
+        {
+            SetDoorOpenedState(door, false);
+            openedDoorIds.Remove(doorId);
+            Debug.Log("门已关闭。");
+            return;
+        }
+
         if (CurrentKey < keysRequiredToOpenDoor)
         {
             Debug.Log(
@@ -297,18 +309,23 @@ public class PlayerController : MonoBehaviour
         }
 
         Debug.Log($"集齐了 {keysRequiredToOpenDoor} 把钥匙，门已打开。");
+        SetDoorOpenedState(door, true);
+        openedDoorIds.Add(doorId);
+    }
 
+    private void SetDoorOpenedState(GameObject door, bool isOpened)
+    {
         var sr = door.GetComponentInChildren<SpriteRenderer>(true);
         if (sr != null)
         {
             Color c = sr.color;
-            c.a = doorOpenedSpriteAlpha;
+            c.a = isOpened ? doorOpenedSpriteAlpha : 1f;
             sr.color = c;
         }
 
         foreach (var col in door.GetComponentsInChildren<Collider2D>(true))
         {
-            col.enabled = false;
+            col.enabled = !isOpened;
         }
     }
 

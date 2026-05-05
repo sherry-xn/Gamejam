@@ -22,6 +22,9 @@ public class PlayerController : MonoBehaviour
     [Tooltip("角色贴图默认朝向与右方向的夹角偏移。比如贴图默认朝上，就填 -90。")]
     [SerializeField] private float rotationOffset = 0f;
 
+    [Tooltip("鼠标移动超过这个像素距离才更新朝向，避免隐藏光标后轻微抖动。")]
+    [SerializeField, Min(0f)] private float mouseMovePixelThreshold = 0.1f;
+
     [Header("交互范围")]
     [Tooltip("子物体上用于主动检测的范围（通常为 Trigger 的 BoxCollider2D）。不赋值则无法通过 TryGetObjectInRange 在范围内按 Tag 取物。")]
     [SerializeField] private BoxCollider2D interactionBox;
@@ -50,8 +53,12 @@ public class PlayerController : MonoBehaviour
     // 缓存交互对象
     private GameObject targetObject = null;
     private Vector2 moveInput;
+    private Vector2 lastMouseScreenPosition;
+    private Vector2 cachedLookDirection;
     private Camera mainCamera;
     private bool isInteracting = false;
+    private bool hasLastMouseScreenPosition = false;
+    private bool hasCachedLookDirection = false;
     private readonly Collider2D[] interactionOverlapArray = new Collider2D[32];
     private readonly HashSet<int> openedDoorIds = new HashSet<int>();
 
@@ -60,6 +67,7 @@ public class PlayerController : MonoBehaviour
 
     private void Awake()
     {
+        Cursor.visible = false;
         Input = GetComponent<PlayerInput>();
         Rigidbody = GetComponent<Rigidbody2D>();
         InteractionIcon = transform.Find("InteractionIcon");
@@ -76,15 +84,23 @@ public class PlayerController : MonoBehaviour
         AddInputActionCallbacks();
     }
 
+    private void OnEnable()
+    {
+        hasLastMouseScreenPosition = false;
+        Cursor.visible = false;
+    }
+
     private void OnDisable()
     {
+        Cursor.visible = true;
         RemoveInputActionCallbacks();
     }
 
     private void Update()
     {
-        // 读取移动输入，后续在物理帧中统一处理移动和旋转。
+        // 读取移动输入，后续在物理帧中统一处理位移。
         moveInput = Input.PlayerActions.Move.ReadValue<Vector2>();
+        UpdateCachedLookDirection();
         UpdateInteractionIcon();
     }
 
@@ -150,16 +166,58 @@ public class PlayerController : MonoBehaviour
         Rigidbody.velocity = moveInput.normalized * moveSpeed;
     }
 
-    private void RotatePlayer(float minimum = 0.0001f)
+    private void UpdateCachedLookDirection(float minimum = 0.0001f)
     {
-        // 只有在确实有移动输入时才更新朝向。
-        if (moveInput.sqrMagnitude < minimum)
+        if (mainCamera == null)
+        {
+            mainCamera = Camera.main;
+        }
+
+        if (mainCamera == null || Mouse.current == null)
         {
             return;
         }
 
-        // 先把输入方向转换成角度，再叠加贴图朝向偏移。
-        float targetAngle = Mathf.Atan2(moveInput.y, moveInput.x) * Mathf.Rad2Deg + rotationOffset;
+        Vector2 currentMouseScreenPosition = Mouse.current.position.ReadValue();
+        if (!hasLastMouseScreenPosition)
+        {
+            lastMouseScreenPosition = currentMouseScreenPosition;
+            hasLastMouseScreenPosition = true;
+            return;
+        }
+
+        Vector2 mouseDelta = currentMouseScreenPosition - lastMouseScreenPosition;
+        lastMouseScreenPosition = currentMouseScreenPosition;
+
+        if (mouseDelta.sqrMagnitude < mouseMovePixelThreshold * mouseMovePixelThreshold)
+        {
+            return;
+        }
+
+        Vector3 mouseScreenPosition = currentMouseScreenPosition;
+        mouseScreenPosition.z = Mathf.Abs(mainCamera.transform.position.z - transform.position.z);
+        Vector3 mouseWorldPosition = mainCamera.ScreenToWorldPoint(mouseScreenPosition);
+        Vector2 direction = (Vector2)mouseWorldPosition - Rigidbody.position;
+
+        // 鼠标贴近玩家中心时不更新缓存方向，避免方向在极小距离内抖动。
+        if (direction.sqrMagnitude < minimum)
+        {
+            return;
+        }
+
+        cachedLookDirection = direction.normalized;
+        hasCachedLookDirection = true;
+    }
+
+    private void RotatePlayer()
+    {
+        if (!hasCachedLookDirection)
+        {
+            return;
+        }
+
+        // 先把缓存的鼠标朝向转换成角度，再叠加贴图朝向偏移。
+        float targetAngle = Mathf.Atan2(cachedLookDirection.y, cachedLookDirection.x) * Mathf.Rad2Deg + rotationOffset;
         float nextAngle = Mathf.MoveTowardsAngle(Rigidbody.rotation, targetAngle, rotateSpeed * Time.fixedDeltaTime);
         Rigidbody.MoveRotation(nextAngle);
     }

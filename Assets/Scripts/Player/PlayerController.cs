@@ -57,6 +57,10 @@ public class PlayerController : MonoBehaviour
     private Vector2 cachedLookDirection;
     private Camera mainCamera;
     private bool isInteracting = false;
+    /// <summary>
+    /// 玩家是否正在与床/柜子交互（隐藏状态）
+    /// </summary>
+    public bool IsInteracting => isInteracting;
     private bool hasLastMouseScreenPosition = false;
     private bool hasCachedLookDirection = false;
     private readonly Collider2D[] interactionOverlapArray = new Collider2D[32];

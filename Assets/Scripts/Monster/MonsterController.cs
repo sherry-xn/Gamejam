@@ -43,6 +43,12 @@ public class MonsterController : MonoBehaviour
 
         aiPath.maxSpeed = data.moveSpeed;
         aiPath.enableRotation = false;
+        aiPath.canMove = true;
+        aiPath.canSearch = true;
+        
+#if UNITY_EDITOR
+        Debug.Log($"[MonsterController] 初始化完成 - maxSpeed: {aiPath.maxSpeed}, canMove: {aiPath.canMove}, canSearch: {aiPath.canSearch}");
+#endif
         
         SwitchToWandering();
     }
@@ -111,6 +117,14 @@ public class MonsterController : MonoBehaviour
         
         // 设置寻路目标为玩家位置
         aiPath.destination = player.position;
+        
+#if UNITY_EDITOR
+        // 调试信息
+        if (Time.frameCount % 60 == 0) // 每60帧输出一次
+        {
+            Debug.Log($"[Monster] State: {currentState}, Pos: {transform.position}, Dest: {aiPath.destination}, Velocity: {aiPath.velocity}, Remaining: {aiPath.remainingDistance}");
+        }
+#endif
         
         // 检测是否到达攻击范围
         float distanceToPlayer = Vector2.Distance(transform.position, player.position);

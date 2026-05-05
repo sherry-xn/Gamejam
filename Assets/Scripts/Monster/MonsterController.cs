@@ -22,24 +22,28 @@ public class MonsterController : MonoBehaviour
     [SerializeField] private MonsterState currentState = MonsterState.Wandering;
     
     private AIPath aiPath;
-    private Seeker seeker;
     private float lastAttackTime;
+    private float lastWanderTime;
     private Vector2 wanderTarget;
     private bool hasWanderTarget = false;
     
     private void Awake()
     {
         aiPath = GetComponent<AIPath>();
-        seeker = GetComponent<Seeker>();
     }
     
     private void Start()
     {
-        // 配置 AIPath 参数
+        if (data == null)
+        {
+            Debug.LogError("[MonsterController] MonsterInfo data is not assigned!");
+            enabled = false;
+            return;
+        }
+
         aiPath.maxSpeed = data.moveSpeed;
-        aiPath.enableRotation = false; // 2D 游戏通常不需要 3D 旋转
+        aiPath.enableRotation = false;
         
-        // 初始状态为漫游
         SwitchToWandering();
     }
     
@@ -58,9 +62,11 @@ public class MonsterController : MonoBehaviour
     
     private void CheckPlayerState()
     {
-        if (playerController == null) return;
+        if (playerController == null || player == null) return;
         
-        if (playerController.IsInteracting)
+        float distanceToPlayer = Vector2.Distance(transform.position, player.position);
+        
+        if (playerController.IsInteracting || distanceToPlayer > data.trackingRange)
         {
             if (currentState == MonsterState.Tracking)
             {
@@ -69,7 +75,7 @@ public class MonsterController : MonoBehaviour
         }
         else
         {
-            if (currentState == MonsterState.Wandering)
+            if (currentState == MonsterState.Wandering && distanceToPlayer <= data.trackingRange)
             {
                 SwitchToTracking();
             }
@@ -80,15 +86,20 @@ public class MonsterController : MonoBehaviour
     {
         currentState = MonsterState.Tracking;
         hasWanderTarget = false;
+#if UNITY_EDITOR
         Debug.Log("怪物切换到追踪状态");
+#endif
     }
     
     private void SwitchToWandering()
     {
         currentState = MonsterState.Wandering;
         hasWanderTarget = false;
+        lastWanderTime = Time.time;
         SetNewWanderPoint();
+#if UNITY_EDITOR
         Debug.Log("怪物切换到漫游状态");
+#endif
     }
     
     private void TrackingUpdate()
@@ -115,10 +126,13 @@ public class MonsterController : MonoBehaviour
         
         if (currentState != MonsterState.Wandering) return;
         
-        // 检测是否到达当前巡逻点
         if (aiPath.reachedDestination || !hasWanderTarget)
         {
-            SetNewWanderPoint();
+            if (Time.time - lastWanderTime >= data.wanderInterval)
+            {
+                SetNewWanderPoint();
+                lastWanderTime = Time.time;
+            }
         }
     }
     
@@ -135,11 +149,14 @@ public class MonsterController : MonoBehaviour
     
     private void TryAttackPlayer()
     {
+        if (playerController == null) return;
         if (Time.time - lastAttackTime < data.attackCooldown) return;
         
         lastAttackTime = Time.time;
         playerController.TakeDamage((int)data.attackDamage);
+#if UNITY_EDITOR
         Debug.Log("怪物攻击玩家");
+#endif
     }
     
     private void OnDrawGizmosSelected()

@@ -394,6 +394,13 @@ public class PlayerController : MonoBehaviour
         {
             col.enabled = !isOpened;
         }
+        
+        // 通知门更新寻路网格
+        var doorComponent = door.GetComponent<Door>();
+        if (doorComponent != null)
+        {
+            doorComponent.OnDoorStateChanged();
+        }
     }
 
     #region Input Methods

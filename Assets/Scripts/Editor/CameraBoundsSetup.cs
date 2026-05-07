@@ -50,6 +50,30 @@ public class CameraBoundsSetup : EditorWindow
         EditorGUILayout.Space(10);
         boundsCollider = (PolygonCollider2D)EditorGUILayout.ObjectField(
             "当前边界碰撞体", boundsCollider, typeof(PolygonCollider2D), true);
+
+        EditorGUILayout.Space(20);
+
+        // ========== 第2步：房间切换系统 ==========
+        GUILayout.Label("第2步：房间切换系统", EditorStyles.boldLabel);
+        EditorGUILayout.HelpBox(
+            "生成独立房间边界 + 门 Trigger + CameraRoomManager，\n" +
+            "实现玩家跨房间时相机平滑过渡。",
+            MessageType.Info);
+
+        if (GUILayout.Button("2a. 生成独立房间边界"))
+        {
+            GenerateIndividualRoomBounds();
+        }
+
+        if (GUILayout.Button("2b. 生成门 Trigger"))
+        {
+            GenerateDoorTriggers();
+        }
+
+        if (GUILayout.Button("2c. 配置 CameraRoomManager"))
+        {
+            SetupCameraRoomManager();
+        }
     }
 
     private void AddCollidersToPrefabs()
@@ -271,6 +295,346 @@ public class CameraBoundsSetup : EditorWindow
             $"相机边界生成完成！\n\n" +
             $"房间区域: {allPaths.Count} 个\n\n" +
             $"请在 Scene 视图中查看 CameraBounds。",
+            "确定");
+    }
+
+    // ========== 第2步：房间切换系统 ==========
+
+    private static readonly string[] knownRoomNames = {
+        "Corridor1", "Hall", "Corridor2", "Classroom", "Toilet", "Dorm"
+    };
+
+    private void GenerateIndividualRoomBounds()
+    {
+        // 查找现有的 CameraBounds
+        var boundsGo = GameObject.Find("CameraBounds");
+        if (boundsGo == null)
+        {
+            EditorUtility.DisplayDialog("错误", "请先执行「第1步」生成相机边界。", "确定");
+            return;
+        }
+
+        var sourceCollider = boundsGo.GetComponent<PolygonCollider2D>();
+        if (sourceCollider == null || sourceCollider.pathCount == 0)
+        {
+            EditorUtility.DisplayDialog("错误", "CameraBounds 上没有有效的 PolygonCollider2D 路径。", "确定");
+            return;
+        }
+
+        // 匹配房间名：按 prefab 根对象名匹配路径
+        var roomPaths = MatchRoomPaths(sourceCollider);
+
+        // 创建每个房间的独立 GameObject
+        int created = 0;
+        foreach (var kvp in roomPaths)
+        {
+            string roomName = kvp.Key;
+            Vector2[] path = kvp.Value;
+
+            string goName = $"RoomBounds_{roomName}";
+            var roomGo = GameObject.Find(goName);
+            if (roomGo == null)
+            {
+                roomGo = new GameObject(goName);
+                Undo.RegisterCreatedObjectUndo(roomGo, $"Create {goName}");
+            }
+
+            var roomCol = roomGo.GetComponent<PolygonCollider2D>();
+            if (roomCol == null)
+                roomCol = Undo.AddComponent<PolygonCollider2D>(roomGo);
+
+            roomCol.isTrigger = true;
+            roomCol.pathCount = 1;
+            roomCol.SetPath(0, path);
+
+            created++;
+            Debug.Log($"[房间边界] {goName} 顶点数: {path.Length}");
+        }
+
+        EditorUtility.DisplayDialog("完成",
+            $"生成了 {created} 个独立房间边界。\n\n" +
+            $"每个 RoomBounds_Xxx 对象可在 Scene 视图中单独查看和编辑。",
+            "确定");
+    }
+
+    private Dictionary<string, Vector2[]> MatchRoomPaths(PolygonCollider2D source)
+    {
+        var result = new Dictionary<string, Vector2[]>();
+
+        // 方法1：按场景中 prefab 根对象名匹配路径中心
+        var rootMap = new Dictionary<string, Transform>();
+        foreach (var root in FindObjectsOfType<Transform>())
+        {
+            if (root.parent != null) continue; // 只看根对象
+            foreach (var name in knownRoomNames)
+            {
+                if (root.name.Contains(name))
+                {
+                    rootMap[name] = root;
+                    break;
+                }
+            }
+        }
+
+        // 对每条路径，找到中心点最近的 prefab 根对象
+        for (int i = 0; i < source.pathCount; i++)
+        {
+            Vector2[] path = source.GetPath(i);
+            if (path.Length < 3) continue;
+
+            // 计算路径中心
+            Vector2 center = Vector2.zero;
+            foreach (var p in path) center += p;
+            center /= path.Length;
+
+            // 找最近的房间
+            string bestRoom = null;
+            float bestDist = float.MaxValue;
+
+            foreach (var kvp in rootMap)
+            {
+                // 计算 prefab 实例的 AABB 中心
+                var renderers = kvp.Value.GetComponentsInChildren<Renderer>();
+                if (renderers.Length == 0) continue;
+
+                Bounds bounds = renderers[0].bounds;
+                for (int r = 1; r < renderers.Length; r++)
+                    bounds.Encapsulate(renderers[r].bounds);
+
+                float dist = Vector2.Distance(center, (Vector2)bounds.center);
+                if (dist < bestDist)
+                {
+                    bestDist = dist;
+                    bestRoom = kvp.Key;
+                }
+            }
+
+            if (bestRoom != null && !result.ContainsKey(bestRoom))
+            {
+                result[bestRoom] = path;
+                Debug.Log($"[匹配] 路径{i} center={center} → {bestRoom} (距离={bestDist:F1})");
+            }
+            else
+            {
+                // fallback：用路径索引命名
+                string fallback = $"Room{i}";
+                result[fallback] = path;
+                Debug.Log($"[匹配] 路径{i} center={center} → {fallback} (未匹配到已知房间)");
+            }
+        }
+
+        return result;
+    }
+
+    private void GenerateDoorTriggers()
+    {
+        // 查找所有门对象（名称含 "door"/"Door"）
+        var allTransforms = FindObjectsOfType<Transform>();
+        var doorObjects = new List<Transform>();
+
+        foreach (var t in allTransforms)
+        {
+            string name = t.gameObject.name;
+            if (name.Contains("door") || name.Contains("Door"))
+            {
+                // 排除非门对象（如 DoorTrigger_ 开头的已生成对象）
+                if (name.StartsWith("DoorTrigger_")) continue;
+                // 排除非根层级（避免匹配到 Door 子组件）
+                if (t.GetComponent<SpriteRenderer>() == null) continue;
+                doorObjects.Add(t);
+            }
+        }
+
+        Debug.Log($"[门Trigger] 找到 {doorObjects.Count} 个门对象");
+
+        // 获取房间边界信息（用于判断门属于哪个房间）
+        var roomBounds = new Dictionary<string, PolygonCollider2D>();
+        foreach (var name in knownRoomNames)
+        {
+            var go = GameObject.Find($"RoomBounds_{name}");
+            if (go != null)
+            {
+                var col = go.GetComponent<PolygonCollider2D>();
+                if (col != null) roomBounds[name] = col;
+            }
+        }
+
+        if (roomBounds.Count == 0)
+        {
+            EditorUtility.DisplayDialog("错误", "请先执行「2a. 生成独立房间边界」。", "确定");
+            return;
+        }
+
+        int created = 0;
+        var triggerParent = GameObject.Find("DoorTriggers");
+        if (triggerParent == null)
+        {
+            triggerParent = new GameObject("DoorTriggers");
+            Undo.RegisterCreatedObjectUndo(triggerParent, "Create DoorTriggers");
+        }
+
+        foreach (var door in doorObjects)
+        {
+            Vector3 doorPos = door.position;
+
+            // 找到门所在的房间（用 OverlapPoint 检测）
+            string fromRoom = null;
+            foreach (var kvp in roomBounds)
+            {
+                if (kvp.Value.OverlapPoint((Vector2)doorPos))
+                {
+                    fromRoom = kvp.Key;
+                    break;
+                }
+            }
+
+            // 找到门朝向的目标房间（门通常在两个房间的边界上）
+            // 在门位置附近扩展搜索
+            string targetRoom = null;
+            float searchRadius = 3f;
+            foreach (var kvp in roomBounds)
+            {
+                if (kvp.Key == fromRoom) continue;
+                // 检查门附近的点是否在另一个房间内
+                Vector2[] offsets = {
+                    new Vector2(searchRadius, 0),
+                    new Vector2(-searchRadius, 0),
+                    new Vector2(0, searchRadius),
+                    new Vector2(0, -searchRadius)
+                };
+                foreach (var offset in offsets)
+                {
+                    if (kvp.Value.OverlapPoint((Vector2)doorPos + offset))
+                    {
+                        targetRoom = kvp.Key;
+                        break;
+                    }
+                }
+                if (targetRoom != null) break;
+            }
+
+            // 创建 Trigger（门位置创建一个 BoxCollider2D）
+            string triggerName = $"DoorTrigger_{door.name}";
+            var triggerGo = new GameObject(triggerName);
+            Undo.RegisterCreatedObjectUndo(triggerGo, $"Create {triggerName}");
+            triggerGo.transform.SetParent(triggerParent.transform);
+            triggerGo.transform.position = doorPos;
+
+            var boxCol = triggerGo.AddComponent<BoxCollider2D>();
+            boxCol.isTrigger = true;
+            boxCol.size = new Vector2(2f, 2f);
+
+            // 添加 RoomDoorTrigger 组件（但需要在运行时绑定）
+            // 编辑器模式下只创建结构，运行时由 SetupCameraRoomManager 绑定
+
+            created++;
+            Debug.Log($"[门Trigger] {triggerName} pos={doorPos} from={fromRoom} target={targetRoom}");
+        }
+
+        EditorUtility.DisplayDialog("完成",
+            $"创建了 {created} 个门 Trigger。\n\n" +
+            $"请在 Inspector 中检查每个 DoorTrigger 的目标房间设置。\n" +
+            $"然后点击「2c. 配置 CameraRoomManager」。",
+            "确定");
+    }
+
+    private void SetupCameraRoomManager()
+    {
+        // 1. 收集所有房间边界
+        var roomBoundaries = new List<CameraRoomManager.RoomBoundary>();
+        foreach (var name in knownRoomNames)
+        {
+            var go = GameObject.Find($"RoomBounds_{name}");
+            if (go == null) continue;
+            var col = go.GetComponent<PolygonCollider2D>();
+            if (col == null) continue;
+
+            roomBoundaries.Add(new CameraRoomManager.RoomBoundary
+            {
+                roomName = name,
+                boundary = col
+            });
+        }
+
+        if (roomBoundaries.Count == 0)
+        {
+            EditorUtility.DisplayDialog("错误", "未找到任何 RoomBounds_Xxx 对象。请先执行「2a」。", "确定");
+            return;
+        }
+
+        // 2. 查找或创建 CameraRoomManager
+        var managerObj = GameObject.Find("CameraRoomManager");
+        if (managerObj == null)
+        {
+            managerObj = new GameObject("CameraRoomManager");
+            Undo.RegisterCreatedObjectUndo(managerObj, "Create CameraRoomManager");
+        }
+
+        var manager = managerObj.GetComponent<CameraRoomManager>();
+        if (manager == null)
+            manager = Undo.AddComponent<CameraRoomManager>(managerObj);
+
+        // 3. 绑定 Confiner2D
+        var vcam = FindObjectOfType<CinemachineVirtualCamera>();
+        if (vcam == null)
+        {
+            EditorUtility.DisplayDialog("错误", "场景中未找到 VirtualCamera。", "确定");
+            return;
+        }
+
+        var confiner = vcam.GetComponent<CinemachineConfiner2D>();
+        if (confiner == null)
+        {
+            EditorUtility.DisplayDialog("错误", "VirtualCamera 上没有 Confiner2D。", "确定");
+            return;
+        }
+
+        manager.confiner = confiner;
+        manager.transitionDelay = 0.8f;
+        manager.rooms = roomBoundaries.ToArray();
+
+        // 4. 设置初始房间（玩家当前位置所在的房间）
+        var player = GameObject.FindWithTag("Player");
+        if (player != null)
+        {
+            string initialRoom = manager.FindRoomAtPosition(player.transform.position);
+            if (!string.IsNullOrEmpty(initialRoom))
+            {
+                manager.SetInitialRoom(initialRoom);
+                Debug.Log($"[CameraRoomManager] 初始房间: {initialRoom}");
+            }
+        }
+
+        // 5. 绑定所有 DoorTrigger 的 RoomDoorTrigger 组件
+        var triggers = FindObjectsOfType<RoomDoorTrigger>();
+        // 由于 DoorTrigger 是编辑器创建的，需要手动绑定
+        // 这里自动查找 DoorTriggers 父对象下的所有子对象
+        var triggerParent = GameObject.Find("DoorTriggers");
+        if (triggerParent != null)
+        {
+            int bound = 0;
+            foreach (Transform child in triggerParent.transform)
+            {
+                var trigger = child.GetComponent<RoomDoorTrigger>();
+                if (trigger == null)
+                    trigger = Undo.AddComponent<RoomDoorTrigger>(child.gameObject);
+
+                trigger.roomManager = manager;
+
+                // 尝试从名称推断目标房间
+                // DoorTrigger_door → 从场景中找到对应的门，判断目标房间
+                // 简化：用户需要手动设置 targetRoom
+                bound++;
+            }
+            Debug.Log($"[CameraRoomManager] 绑定了 {bound} 个 DoorTrigger");
+        }
+
+        EditorUtility.DisplayDialog("完成",
+            $"CameraRoomManager 配置完成！\n\n" +
+            $"房间边界: {roomBoundaries.Count} 个\n" +
+            $"Confiner2D: 已绑定\n\n" +
+            $"请在 Inspector 中检查每个 DoorTrigger 的 targetRoom 设置，\n" +
+            $"然后运行游戏测试。",
             "确定");
     }
 

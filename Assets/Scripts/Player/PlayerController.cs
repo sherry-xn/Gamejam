@@ -368,14 +368,14 @@ public class PlayerController : MonoBehaviour
             return;
         }
 
-        if (CurrentKey < keysRequiredToOpenDoor)
-        {
-            Debug.Log(
-                $"钥匙不足：需要 {keysRequiredToOpenDoor} 把钥匙才能开门，当前有 {CurrentKey:F0} 把。");
-            return;
-        }
+        // if (CurrentKey < keysRequiredToOpenDoor)
+        // {
+        //     Debug.Log(
+        //         $"钥匙不足：需要 {keysRequiredToOpenDoor} 把钥匙才能开门，当前有 {CurrentKey:F0} 把。");
+        //     return;
+        // }
 
-        Debug.Log($"集齐了 {keysRequiredToOpenDoor} 把钥匙，门已打开。");
+        Debug.Log($"门已打开。");
         SetDoorOpenedState(door, true);
         openedDoorIds.Add(doorId);
     }
@@ -392,7 +392,9 @@ public class PlayerController : MonoBehaviour
 
         foreach (var col in door.GetComponentsInChildren<Collider2D>(true))
         {
-            col.enabled = !isOpened;
+            // 只禁用物理碰撞体（非 trigger），保留 trigger 用于交互检测
+            if (!col.isTrigger)
+                col.enabled = !isOpened;
         }
         
         // 通知门更新寻路网格

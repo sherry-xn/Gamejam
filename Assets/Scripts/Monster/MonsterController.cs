@@ -36,7 +36,7 @@ public class MonsterController : MonoBehaviour
     {
         if (data == null)
         {
-            Debug.LogError("[MonsterController] MonsterInfo data is not assigned!");
+            // Debug.LogError("[MonsterController] MonsterInfo data is not assigned!");
             enabled = false;
             return;
         }
@@ -104,9 +104,9 @@ public class MonsterController : MonoBehaviour
     {
         currentState = MonsterState.Tracking;
         hasWanderTarget = false;
-#if UNITY_EDITOR
-        Debug.Log("怪物切换到追踪状态");
-#endif
+// #if UNITY_EDITOR
+//         Debug.Log("怪物切换到追踪状态");
+// #endif
     }
     
     private void SwitchToWandering()
@@ -115,9 +115,9 @@ public class MonsterController : MonoBehaviour
         hasWanderTarget = false;
         lastWanderTime = Time.time;
         SetNewWanderPoint();
-#if UNITY_EDITOR
-        Debug.Log("怪物切换到漫游状态");
-#endif
+// #if UNITY_EDITOR
+//         Debug.Log("怪物切换到漫游状态");
+// #endif
     }
     
     private void TrackingUpdate()
@@ -188,9 +188,9 @@ public class MonsterController : MonoBehaviour
         
         lastAttackTime = Time.time;
         playerController.TakeDamage((int)data.attackDamage);
-#if UNITY_EDITOR
-        Debug.Log("怪物攻击玩家");
-#endif
+// #if UNITY_EDITOR
+//         Debug.Log("怪物攻击玩家");
+// #endif
     }
     
     private void OnDrawGizmosSelected()

@@ -15,7 +15,7 @@ public class Door : MonoBehaviour
         {
             // 更新门周围的寻路网格
             AstarPath.active.UpdateGraphs(GetComponent<Collider2D>().bounds);
-            Debug.Log("门状态改变，更新寻路网格");
+            // Debug.Log("门状态改变，更新寻路网格");
         }
     }
 }

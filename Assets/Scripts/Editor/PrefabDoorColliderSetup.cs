@@ -21,7 +21,8 @@ public class PrefabDoorColliderSetup : EditorWindow
 
         EditorGUILayout.HelpBox(
             "扫描 Prefab 文件夹，给所有名称含 door/Door 的子对象\n" +
-            "添加 BoxCollider2D (isTrigger)，用于房间切换检测。",
+            "添加 BoxCollider2D (isTrigger) 用于房间切换检测\n" +
+            "添加 BoxCollider2D (非 trigger) 用于物理阻挡",
             MessageType.Info);
 
         EditorGUILayout.Space();
@@ -90,10 +91,15 @@ public class PrefabDoorColliderSetup : EditorWindow
                     size = new Vector2(1f, 2f);
                 }
 
-                var col = child.gameObject.AddComponent<BoxCollider2D>();
-                col.isTrigger = true;
-                col.size = size;
-                col.offset = Vector2.zero;
+                var triggerCol = child.gameObject.AddComponent<BoxCollider2D>();
+                triggerCol.isTrigger = true;
+                triggerCol.size = size;
+                triggerCol.offset = Vector2.zero;
+
+                var blockCol = child.gameObject.AddComponent<BoxCollider2D>();
+                blockCol.isTrigger = false;
+                blockCol.size = size;
+                blockCol.offset = Vector2.zero;
 
                 log.Add($"  [添加] {path} → {objName} (size: {size:F2})");
                 prefabModified = true;
@@ -146,10 +152,13 @@ public class PrefabDoorColliderSetup : EditorWindow
                 string objName = child.gameObject.name;
                 if (!objName.Contains("door") && !objName.Contains("Door")) continue;
 
-                var col = child.GetComponent<BoxCollider2D>();
-                if (col == null) continue;
+                var cols = child.GetComponents<BoxCollider2D>();
+                if (cols.Length == 0) continue;
 
-                Object.DestroyImmediate(col);
+                foreach (var col in cols)
+                {
+                    Object.DestroyImmediate(col);
+                }
                 log.Add($"  [移除] {path} → {objName}");
                 prefabModified = true;
                 totalRemoved++;

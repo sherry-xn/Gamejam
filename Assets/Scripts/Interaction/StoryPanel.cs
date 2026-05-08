@@ -40,18 +40,15 @@ public class StoryPanel : MonoBehaviour
 
     private void CreateUI()
     {
-        var canvas = FindObjectOfType<Canvas>();
-        if (canvas == null)
-        {
-            var canvasObj = new GameObject("StoryCanvas");
-            canvas = canvasObj.AddComponent<Canvas>();
-            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-            canvas.sortingOrder = 100;
-            var scaler = canvasObj.AddComponent<UnityEngine.UI.CanvasScaler>();
-            scaler.uiScaleMode = UnityEngine.UI.CanvasScaler.ScaleMode.ScaleWithScreenSize;
-            scaler.referenceResolution = new Vector2(1920, 1080);
-            canvasObj.AddComponent<UnityEngine.UI.GraphicRaycaster>();
-        }
+        var canvasObj = new GameObject("StoryCanvas");
+        canvasObj.transform.SetParent(transform);
+        var canvas = canvasObj.AddComponent<Canvas>();
+        canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+        canvas.sortingOrder = 100;
+        var scaler = canvasObj.AddComponent<UnityEngine.UI.CanvasScaler>();
+        scaler.uiScaleMode = UnityEngine.UI.CanvasScaler.ScaleMode.ScaleWithScreenSize;
+        scaler.referenceResolution = new Vector2(1920, 1080);
+        canvasObj.AddComponent<UnityEngine.UI.GraphicRaycaster>();
 
         panelRoot = new GameObject("StoryPanel");
         panelRoot.transform.SetParent(canvas.transform, false);

@@ -23,8 +23,8 @@ public class MonsterNavigationSetup : EditorWindow
         GridGraph gridGraph = astarPath.data.AddGraph(typeof(GridGraph)) as GridGraph;
         
         // 配置 Grid Graph - 覆盖整个地图
-        gridGraph.SetDimensions(420, 460, 0.25f);
-        gridGraph.center = new Vector3(54.5f, 22.0f, 0f);
+        gridGraph.SetDimensions(450, 460, 0.25f);
+        gridGraph.center = new Vector3(52.0f, 22.0f, 0f);
         gridGraph.rotation = new Vector3(0, 0, 0);
         
         // 2D 模式设置

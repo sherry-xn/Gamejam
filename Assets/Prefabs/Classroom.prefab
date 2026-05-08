@@ -405,6 +405,7 @@ GameObject:
   - component: {fileID: 4045464416910867763}
   - component: {fileID: 4122987967873459484}
   - component: {fileID: 521558501076467845}
+  - component: {fileID: 7619002411121669575}
   m_Layer: 6
   m_HasEditorInfo: 1
   m_Name: cabinet
@@ -530,6 +531,20 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
+--- !u!114 &7619002411121669575
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3139149077009786867}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aab7e55c918871f49aabcf39464bc945, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hidePoint: {fileID: 7955324831460564460}
+  hiddenAlpha: 0.7
 --- !u!1 &3147804840162877352
 GameObject:
   m_ObjectHideFlags: 0
@@ -892,7 +907,7 @@ Transform:
   m_GameObject: {fileID: 4474837239566793123}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: -0.19, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

@@ -29,10 +29,8 @@ public class PlayerController : MonoBehaviour
     [Tooltip("子物体上用于主动检测的范围（通常为 Trigger 的 BoxCollider2D）。不赋值则无法通过 TryGetObjectInRange 在范围内按 Tag 取物。")]
     [SerializeField] private BoxCollider2D interactionBox;
 
-    [SerializeField] private string bedTag = "Bed";
     [SerializeField] private string travelBagTag = "TravelBag";
     [SerializeField] private string doorTag = "Door";
-    [SerializeField] private string wardrobeTag = "Wardrobe";
 
     [Header("门")]
     [SerializeField, Min(1)] private int keysRequiredToOpenDoor = 3;
@@ -156,10 +154,9 @@ public class PlayerController : MonoBehaviour
         }
 
         bool show = isInteracting
-            || TryGetObjectInRange(bedTag, out _)
+            || TryGetHideableInRange(out _)
             || TryGetObjectInRange(travelBagTag, out _)
-            || TryGetObjectInRange(doorTag, out _)
-            || TryGetObjectInRange(wardrobeTag, out _);
+            || TryGetObjectInRange(doorTag, out _);
         InteractionIcon.gameObject.SetActive(show);
     }
 
@@ -255,43 +252,6 @@ public class PlayerController : MonoBehaviour
         Input.PlayerActions.Interaction.started -= OnInteractionStarted;
     }
 
-    // 进入交互状态
-    private void StartInteraction(GameObject target)
-    {
-        isInteracting = true;
-        targetObject = target;
-        // 暂时关闭物体的碰撞器
-        target.GetComponent<Collider2D>().enabled = false;
-        // 物体的SpriteRenderer阿尔法值变为0.5，表示被遮挡了
-        var sr = target.GetComponent<SpriteRenderer>();
-        if (sr != null)
-        {
-            Color c = sr.color;
-            c.a = 0.7f;
-            sr.color = c;
-        }
-        // 关闭玩家输入
-        Input.DisablePlayerMoveInput();
-    }
-
-    // 退出交互状态
-    private void ExitInteraction(GameObject target)
-    {
-        isInteracting = false;
-        // 打开物体的碰撞器
-        target.GetComponent<Collider2D>().enabled = true;
-        // 物体的SpriteRenderer阿尔法值变为1，表示被遮挡了
-        var sr = target.GetComponent<SpriteRenderer>();
-        if (sr != null)
-        {
-            Color c = sr.color;
-            c.a = 1f;
-            sr.color = c;
-        }
-        // 开启玩家输入
-        Input.EnablePlayerMoveInput();
-    }
-
     /// <summary>在 <see cref="interactionBox"/> 与当前重叠的碰撞体中，取第一个 <paramref name="tag"/> 匹配的物体。tag 需已在 Tag 管理器注册。</summary>
     public bool TryGetObjectInRange(string tag, out GameObject gameObject)
     {
@@ -330,6 +290,32 @@ public class PlayerController : MonoBehaviour
                 gameObject = c.gameObject;
                 return true;
             }
+        }
+        return false;
+    }
+
+    public bool TryGetHideableInRange(out Hideable hideable)
+    {
+        hideable = null;
+        if (interactionBox == null) return false;
+
+        Vector2 center = interactionBox.transform.TransformPoint(interactionBox.offset);
+        var lossy = interactionBox.transform.lossyScale;
+        var size = new Vector2(
+            interactionBox.size.x * Mathf.Abs(lossy.x),
+            interactionBox.size.y * Mathf.Abs(lossy.y));
+        float angle = interactionBox.transform.eulerAngles.z;
+
+        int count = Physics2D.OverlapBoxNonAlloc(
+            center, size * 0.5f, angle, interactionOverlapArray, ~0);
+
+        for (int i = 0; i < count; i++)
+        {
+            var c = interactionOverlapArray[i];
+            if (c == null) continue;
+            if (c.attachedRigidbody == Rigidbody) continue;
+            var h = c.GetComponent<Hideable>();
+            if (h != null) { hideable = h; return true; }
         }
         return false;
     }
@@ -412,37 +398,21 @@ public class PlayerController : MonoBehaviour
     {
         if (isInteracting)
         {
-            if (targetObject == null)
-            {
-                return;
-            }
-
-            ExitInteraction(targetObject);
+            if (targetObject == null) return;
+            var currentHideable = targetObject.GetComponent<Hideable>();
+            if (currentHideable != null) currentHideable.OnExit(this);
+            isInteracting = false;
+            Input.EnablePlayerMoveInput();
             targetObject = null;
-            // 同一键按下只处理“钻出”，否则本帧还会继续 TryGet 床，可能马上再次钻进
             return;
         }
 
-        if (TryGetObjectInRange(bedTag, out targetObject))
+        if (TryGetHideableInRange(out var hideable))
         {
-            StartInteraction(targetObject);
-            var pointT = targetObject.transform.Find("bedPoint");
-            if (pointT != null)
-            {
-                SetPlayerPosition(pointT.position);
-            }
-
-            return;
-        }
-        if (TryGetObjectInRange(wardrobeTag, out targetObject))
-        {
-            StartInteraction(targetObject);
-            var pointT = targetObject.transform.Find("wardrobePoint");
-            if (pointT != null)
-            {
-                SetPlayerPosition(pointT.position);
-            }
-
+            targetObject = hideable.gameObject;
+            isInteracting = true;
+            Input.DisablePlayerMoveInput();
+            hideable.OnEnter(this);
             return;
         }
 
@@ -463,7 +433,7 @@ public class PlayerController : MonoBehaviour
         SetPlayerPosition(transform.position);
     }
 
-    private void SetPlayerPosition(Vector3 position)
+    public void SetPlayerPosition(Vector3 position)
     {
         Vector3 fixedPosition = new Vector3(position.x, position.y, fixedWorldZ);
         transform.position = fixedPosition;

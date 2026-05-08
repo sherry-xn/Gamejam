@@ -1586,7 +1586,7 @@ Transform:
   m_GameObject: {fileID: 519420028}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 58.03, y: -14.24, z: -10}
+  m_LocalPosition: {x: 57.4, y: -16.4, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2389,6 +2389,7 @@ GameObject:
   - component: {fileID: 758653379}
   - component: {fileID: 758653378}
   - component: {fileID: 758653377}
+  - component: {fileID: 758653380}
   m_Layer: 6
   m_HasEditorInfo: 1
   m_Name: Bed
@@ -2514,6 +2515,20 @@ Transform:
   - {fileID: 1297022563}
   m_Father: {fileID: 2122673107}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &758653380
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 758653375}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aab7e55c918871f49aabcf39464bc945, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hidePoint: {fileID: 1297022563}
+  hiddenAlpha: 0.7
 --- !u!1 &774852295
 GameObject:
   m_ObjectHideFlags: 0
@@ -4045,6 +4060,7 @@ GameObject:
   - component: {fileID: 1215661952}
   - component: {fileID: 1215661951}
   - component: {fileID: 1215661950}
+  - component: {fileID: 1215661954}
   m_Layer: 6
   m_HasEditorInfo: 1
   m_Name: Wardrobe
@@ -4182,6 +4198,20 @@ Transform:
   - {fileID: 1991879601}
   m_Father: {fileID: 2122673107}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1215661954
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1215661949}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aab7e55c918871f49aabcf39464bc945, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hidePoint: {fileID: 1991879601}
+  hiddenAlpha: 0.7
 --- !u!1 &1251075906
 GameObject:
   m_ObjectHideFlags: 0
@@ -5551,7 +5581,7 @@ Transform:
   m_GameObject: {fileID: 1706760275}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 58.03, y: -14.24, z: -10}
+  m_LocalPosition: {x: 57.4, y: -16.4, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -5894,10 +5924,8 @@ MonoBehaviour:
   rotationOffset: 0
   mouseMovePixelThreshold: 0.1
   interactionBox: {fileID: 213887374}
-  bedTag: Bed
   travelBagTag: TravelBag
   doorTag: Door
-  wardrobeTag: Wardrobe
   keysRequiredToOpenDoor: 3
   doorOpenedSpriteAlpha: 0.7
   <HealthBar>k__BackingField: {fileID: 2053367573}
@@ -5970,7 +5998,7 @@ Transform:
   m_GameObject: {fileID: 1883391179}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 58.03, y: -14.24, z: 0}
+  m_LocalPosition: {x: 57.4, y: -16.4, z: 0}
   m_LocalScale: {x: 1.0311167, y: 1.016453, z: 2}
   m_ConstrainProportionsScale: 0
   m_Children:

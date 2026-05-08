@@ -18,6 +18,7 @@ public class StoryPanel : MonoBehaviour
     private TextMeshProUGUI textComponent;
     private PlayerController currentPlayer;
     private bool isShowing;
+    private bool readyToClose;
 
     public static bool IsShowing => instance != null && instance.isShowing;
 
@@ -81,6 +82,7 @@ public class StoryPanel : MonoBehaviour
     private void Update()
     {
         if (!isShowing) return;
+        if (!readyToClose) { readyToClose = true; return; }
 
         if (UnityEngine.Input.GetKeyDown(KeyCode.E) || UnityEngine.Input.GetKeyDown(KeyCode.Space))
         {
@@ -95,6 +97,7 @@ public class StoryPanel : MonoBehaviour
         instance.panelRoot.SetActive(true);
         instance.currentPlayer = player;
         instance.isShowing = true;
+        instance.readyToClose = false;
         if (player != null) player.Input.DisablePlayerMoveInput();
     }
 

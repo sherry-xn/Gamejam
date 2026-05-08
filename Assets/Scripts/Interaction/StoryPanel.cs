@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using TMPro;
+using UnityEngine.UI;
 
 /// <summary>
 /// 底部对话框单例，用于显示线索物品的文字内容。
@@ -10,12 +10,12 @@ public class StoryPanel : MonoBehaviour
     private static StoryPanel instance;
 
     [SerializeField] private float panelHeight = 160f;
-    [SerializeField] private float fontSize = 24f;
+    [SerializeField] private int fontSize = 24;
     [SerializeField] private Color bgColor = new Color(0f, 0f, 0f, 0.75f);
     [SerializeField] private Color textColor = Color.white;
 
     private GameObject panelRoot;
-    private TextMeshProUGUI textComponent;
+    private Text textComponent;
     private PlayerController currentPlayer;
     private bool isShowing;
     private bool readyToClose;
@@ -46,15 +46,15 @@ public class StoryPanel : MonoBehaviour
         var canvas = canvasObj.AddComponent<Canvas>();
         canvas.renderMode = RenderMode.ScreenSpaceOverlay;
         canvas.sortingOrder = 100;
-        var scaler = canvasObj.AddComponent<UnityEngine.UI.CanvasScaler>();
-        scaler.uiScaleMode = UnityEngine.UI.CanvasScaler.ScaleMode.ScaleWithScreenSize;
+        var scaler = canvasObj.AddComponent<CanvasScaler>();
+        scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
         scaler.referenceResolution = new Vector2(1920, 1080);
-        canvasObj.AddComponent<UnityEngine.UI.GraphicRaycaster>();
+        canvasObj.AddComponent<GraphicRaycaster>();
 
         panelRoot = new GameObject("StoryPanel");
-        panelRoot.transform.SetParent(canvas.transform, false);
+        panelRoot.transform.SetParent(canvasObj.transform, false);
 
-        var bg = panelRoot.AddComponent<UnityEngine.UI.Image>();
+        var bg = panelRoot.AddComponent<Image>();
         bg.color = bgColor;
 
         var rt = panelRoot.GetComponent<RectTransform>();
@@ -66,17 +66,19 @@ public class StoryPanel : MonoBehaviour
         var textObj = new GameObject("StoryText");
         textObj.transform.SetParent(panelRoot.transform, false);
 
-        textComponent = textObj.AddComponent<TextMeshProUGUI>();
+        textComponent = textObj.AddComponent<Text>();
+        textComponent.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
         textComponent.fontSize = fontSize;
         textComponent.color = textColor;
-        textComponent.alignment = TextAlignmentOptions.MidlineLeft;
-        textComponent.enableWordWrapping = true;
-        textComponent.margin = new Vector4(30f, 10f, 30f, 10f);
+        textComponent.alignment = TextAnchor.MiddleLeft;
+        textComponent.horizontalOverflow = HorizontalWrapMode.Wrap;
+        textComponent.verticalOverflow = VerticalWrapMode.Truncate;
 
         var textRt = textObj.GetComponent<RectTransform>();
         textRt.anchorMin = Vector2.zero;
         textRt.anchorMax = Vector2.one;
-        textRt.sizeDelta = Vector2.zero;
+        textRt.offsetMin = new Vector2(30f, 10f);
+        textRt.offsetMax = new Vector2(-30f, -10f);
     }
 
     private void Update()
@@ -84,7 +86,7 @@ public class StoryPanel : MonoBehaviour
         if (!isShowing) return;
         if (!readyToClose) { readyToClose = true; return; }
 
-        if (UnityEngine.Input.GetKeyDown(KeyCode.E) || UnityEngine.Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.E) || Input.GetKeyDown(KeyCode.Space))
         {
             Hide();
         }

@@ -222,20 +222,32 @@ public class MonsterController : MonoBehaviour
         if (player == null) return;
         
         Vector2 direction = ((Vector2)player.position - (Vector2)transform.position).normalized;
-        RaycastHit2D hit = Physics2D.Raycast(
-            transform.position, 
-            direction, 
-            doorDetectionRange, 
+        
+        // 使用 OverlapCircle 检测门，因为门可能只有 Trigger 碰撞体
+        Collider2D[] hits = Physics2D.OverlapCircleAll(
+            transform.position,
+            doorDetectionRange,
             LayerMask.GetMask("Default")
         );
         
-        if (hit.collider != null && hit.collider.CompareTag("Door"))
+        foreach (var hit in hits)
         {
-            int doorId = hit.collider.GetInstanceID();
-            // 只打开未开的门
-            if (!openedDoorIds.Contains(doorId))
+            if (hit != null && hit.CompareTag("Door"))
             {
-                OpenDoor(hit.collider.gameObject);
+                // 检查门是否在玩家方向
+                Vector2 doorDir = ((Vector2)hit.transform.position - (Vector2)transform.position).normalized;
+                float dot = Vector2.Dot(direction, doorDir);
+                
+                // 只处理前方的门（dot > 0.5 表示在前方约 60 度范围内）
+                if (dot > 0.5f)
+                {
+                    int doorId = hit.GetInstanceID();
+                    // 只打开未开的门
+                    if (!openedDoorIds.Contains(doorId))
+                    {
+                        OpenDoor(hit.gameObject);
+                    }
+                }
             }
         }
     }

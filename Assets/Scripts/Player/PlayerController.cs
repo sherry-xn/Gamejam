@@ -133,7 +133,7 @@ public class PlayerController : MonoBehaviour
     public void AddKey(int key = 1)
     {
         CurrentKey += key;
-        KeyNumberText.text = "Key: " + CurrentKey.ToString();
+        KeyNumberText.text = CurrentKey.ToString();
     }
 
 

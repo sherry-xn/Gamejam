@@ -213,7 +213,7 @@ public class CameraBoundsSetup : EditorWindow
 
             // 检查是否是 CompositeCollider2D 的子碰撞体（已被上面处理过）
             var compositeParent = col.GetComponentInParent<CompositeCollider2D>();
-            if (compositeParent != null && (int)col.compositeOperation == 1) // 1 = Merge
+            if (compositeParent != null)
             {
                 // 如果父级 CompositeCollider2D 已被处理，跳过
                 if (processedObjects.Contains(compositeParent.gameObject))
@@ -225,15 +225,15 @@ public class CameraBoundsSetup : EditorWindow
                 if (compositeSize.x >= 0.01f && compositeSize.y >= 0.01f &&
                     compositeSize.x <= maxWallSize && compositeSize.y <= maxWallSize)
                 {
-                    Transform compositeRoot = compositeParent.transform.root;
-                    if (!groups.ContainsKey(compositeRoot))
-                        groups[compositeRoot] = new List<Rect>();
+                    Transform parentRoot = compositeParent.transform.root;
+                    if (!groups.ContainsKey(parentRoot))
+                        groups[parentRoot] = new List<Rect>();
 
-                    groups[compositeRoot].Add(new Rect(
+                    groups[parentRoot].Add(new Rect(
                         compositeParent.bounds.min.x, compositeParent.bounds.min.y,
                         compositeSize.x, compositeSize.y));
 
-                    Debug.Log($"[墙体-Composite子] {compositeParent.gameObject.name} root={compositeRoot.name} center={compositeParent.bounds.center} size={compositeSize}");
+                    Debug.Log($"[墙体-Composite子] {compositeParent.gameObject.name} root={parentRoot.name} center={compositeParent.bounds.center} size={compositeSize}");
                 }
                 continue;
             }

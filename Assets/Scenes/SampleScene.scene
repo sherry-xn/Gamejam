@@ -134,6 +134,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2384273}
   - component: {fileID: 2384274}
+  - component: {fileID: 2384275}
   m_Layer: 0
   m_HasEditorInfo: 1
   m_Name: DoorTrigger_door (1)
@@ -203,6 +204,20 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 2, y: 2}
   m_EdgeRadius: 0
+--- !u!114 &2384275
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2384272}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 097173f7a1832e44cb1289fd6d0f207b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  roomManager: {fileID: 815185762}
+  targetRoom: Classroom
 --- !u!1 &50721696
 GameObject:
   m_ObjectHideFlags: 0
@@ -985,6 +1000,7 @@ GameObject:
   m_Component:
   - component: {fileID: 327026535}
   - component: {fileID: 327026536}
+  - component: {fileID: 327026537}
   m_Layer: 0
   m_HasEditorInfo: 1
   m_Name: DoorTrigger_Door
@@ -1054,6 +1070,20 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 2, y: 2}
   m_EdgeRadius: 0
+--- !u!114 &327026537
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 327026534}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 097173f7a1832e44cb1289fd6d0f207b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  roomManager: {fileID: 815185762}
+  targetRoom: Corridor1
 --- !u!1 &363296328
 GameObject:
   m_ObjectHideFlags: 0
@@ -1553,7 +1583,7 @@ Transform:
   m_GameObject: {fileID: 519420028}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 16.475023, y: -0.19999999, z: -10}
+  m_LocalPosition: {x: 33.5, y: -0.2, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1818,6 +1848,7 @@ GameObject:
   m_Component:
   - component: {fileID: 699898946}
   - component: {fileID: 699898947}
+  - component: {fileID: 699898948}
   m_Layer: 0
   m_HasEditorInfo: 1
   m_Name: DoorTrigger_Door
@@ -1887,6 +1918,20 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 2, y: 2}
   m_EdgeRadius: 0
+--- !u!114 &699898948
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 699898945}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 097173f7a1832e44cb1289fd6d0f207b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  roomManager: {fileID: 815185762}
+  targetRoom: Corridor1
 --- !u!1 &709696751
 GameObject:
   m_ObjectHideFlags: 0
@@ -2827,6 +2872,7 @@ GameObject:
   m_Component:
   - component: {fileID: 821413898}
   - component: {fileID: 821413899}
+  - component: {fileID: 821413900}
   m_Layer: 0
   m_HasEditorInfo: 1
   m_Name: DoorTrigger_door
@@ -2896,6 +2942,20 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 2, y: 2}
   m_EdgeRadius: 0
+--- !u!114 &821413900
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 821413897}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 097173f7a1832e44cb1289fd6d0f207b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  roomManager: {fileID: 815185762}
+  targetRoom: Corridor1
 --- !u!1 &843536672
 GameObject:
   m_ObjectHideFlags: 0
@@ -3042,6 +3102,7 @@ GameObject:
   m_Component:
   - component: {fileID: 877294712}
   - component: {fileID: 877294713}
+  - component: {fileID: 877294714}
   m_Layer: 0
   m_HasEditorInfo: 1
   m_Name: DoorTrigger_door (1)
@@ -3111,6 +3172,20 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 2, y: 2}
   m_EdgeRadius: 0
+--- !u!114 &877294714
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 877294711}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 097173f7a1832e44cb1289fd6d0f207b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  roomManager: {fileID: 815185762}
+  targetRoom: Corridor2
 --- !u!1 &917545685
 GameObject:
   m_ObjectHideFlags: 0
@@ -3121,6 +3196,7 @@ GameObject:
   m_Component:
   - component: {fileID: 917545686}
   - component: {fileID: 917545687}
+  - component: {fileID: 917545688}
   m_Layer: 0
   m_HasEditorInfo: 1
   m_Name: DoorTrigger_schooldoor
@@ -3190,6 +3266,20 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 2, y: 2}
   m_EdgeRadius: 0
+--- !u!114 &917545688
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 917545685}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 097173f7a1832e44cb1289fd6d0f207b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  roomManager: {fileID: 815185762}
+  targetRoom: Corridor1
 --- !u!1001 &931979354
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3637,6 +3727,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1044654978}
   - component: {fileID: 1044654979}
+  - component: {fileID: 1044654980}
   m_Layer: 0
   m_HasEditorInfo: 1
   m_Name: DoorTrigger_door
@@ -3706,6 +3797,20 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 2, y: 2}
   m_EdgeRadius: 0
+--- !u!114 &1044654980
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1044654977}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 097173f7a1832e44cb1289fd6d0f207b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  roomManager: {fileID: 815185762}
+  targetRoom: Toilet
 --- !u!1 &1132424652
 GameObject:
   m_ObjectHideFlags: 0
@@ -3953,6 +4058,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1251075907}
   - component: {fileID: 1251075908}
+  - component: {fileID: 1251075909}
   m_Layer: 0
   m_HasEditorInfo: 1
   m_Name: DoorTrigger_Door (1)
@@ -4022,6 +4128,20 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 2, y: 2}
   m_EdgeRadius: 0
+--- !u!114 &1251075909
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1251075906}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 097173f7a1832e44cb1289fd6d0f207b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  roomManager: {fileID: 815185762}
+  targetRoom: Toilet
 --- !u!1 &1286816524
 GameObject:
   m_ObjectHideFlags: 0
@@ -4442,6 +4562,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1421527133}
   - component: {fileID: 1421527134}
+  - component: {fileID: 1421527135}
   m_Layer: 0
   m_HasEditorInfo: 1
   m_Name: DoorTrigger_Door
@@ -4511,6 +4632,20 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 2, y: 2}
   m_EdgeRadius: 0
+--- !u!114 &1421527135
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1421527132}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 097173f7a1832e44cb1289fd6d0f207b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  roomManager: {fileID: 815185762}
+  targetRoom: Corridor1
 --- !u!1 &1426205706
 GameObject:
   m_ObjectHideFlags: 0
@@ -4567,6 +4702,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1475432954}
   - component: {fileID: 1475432955}
+  - component: {fileID: 1475432956}
   m_Layer: 0
   m_HasEditorInfo: 1
   m_Name: DoorTrigger_Door (2)
@@ -4636,6 +4772,20 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 2, y: 2}
   m_EdgeRadius: 0
+--- !u!114 &1475432956
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1475432953}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 097173f7a1832e44cb1289fd6d0f207b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  roomManager: {fileID: 815185762}
+  targetRoom: Corridor2
 --- !u!1 &1486790945
 GameObject:
   m_ObjectHideFlags: 0
@@ -4646,6 +4796,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1486790946}
   - component: {fileID: 1486790947}
+  - component: {fileID: 1486790948}
   m_Layer: 0
   m_HasEditorInfo: 1
   m_Name: DoorTrigger_Door
@@ -4715,6 +4866,20 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 2, y: 2}
   m_EdgeRadius: 0
+--- !u!114 &1486790948
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1486790945}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 097173f7a1832e44cb1289fd6d0f207b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  roomManager: {fileID: 815185762}
+  targetRoom: Corridor2
 --- !u!1001 &1489906241
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5022,6 +5187,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1692725691}
   - component: {fileID: 1692725692}
+  - component: {fileID: 1692725693}
   m_Layer: 0
   m_HasEditorInfo: 1
   m_Name: DoorTrigger_Door (1)
@@ -5091,6 +5257,20 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 2, y: 2}
   m_EdgeRadius: 0
+--- !u!114 &1692725693
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1692725690}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 097173f7a1832e44cb1289fd6d0f207b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  roomManager: {fileID: 815185762}
+  targetRoom: Dorm
 --- !u!1 &1706760275
 GameObject:
   m_ObjectHideFlags: 0
@@ -5158,7 +5338,7 @@ Transform:
   m_GameObject: {fileID: 1706760275}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 16.01, y: -0.2, z: -10}
+  m_LocalPosition: {x: 33.5, y: -0.2, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -5177,7 +5357,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f453f694addf4275988fac205bc91968, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_BoundingShape2D: {fileID: 1937861656}
+  m_BoundingShape2D: {fileID: 721400869}
   m_Damping: 0.5
   m_MaxWindowSize: 0
   m_Padding: 0
@@ -5443,7 +5623,7 @@ Transform:
   m_GameObject: {fileID: 1883391179}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 16.01, y: -0.2, z: 0}
+  m_LocalPosition: {x: 33.5, y: -0.2, z: 0}
   m_LocalScale: {x: 1.0311167, y: 1.016453, z: 2}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -5562,6 +5742,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1898196556}
   - component: {fileID: 1898196557}
+  - component: {fileID: 1898196558}
   m_Layer: 0
   m_HasEditorInfo: 1
   m_Name: DoorTrigger_Door
@@ -5631,6 +5812,20 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 2, y: 2}
   m_EdgeRadius: 0
+--- !u!114 &1898196558
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1898196555}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 097173f7a1832e44cb1289fd6d0f207b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  roomManager: {fileID: 815185762}
+  targetRoom: Dorm
 --- !u!1 &1937861655
 GameObject:
   m_ObjectHideFlags: 0
@@ -5757,6 +5952,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1960040678}
   - component: {fileID: 1960040679}
+  - component: {fileID: 1960040680}
   m_Layer: 0
   m_HasEditorInfo: 1
   m_Name: DoorTrigger_door (2)
@@ -5826,6 +6022,20 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 2, y: 2}
   m_EdgeRadius: 0
+--- !u!114 &1960040680
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1960040677}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 097173f7a1832e44cb1289fd6d0f207b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  roomManager: {fileID: 815185762}
+  targetRoom: Corridor1
 --- !u!1 &1991879600
 GameObject:
   m_ObjectHideFlags: 0

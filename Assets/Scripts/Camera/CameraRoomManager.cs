@@ -1,94 +1,80 @@
 using UnityEngine;
 using Cinemachine;
-using System.Collections;
+using System.Collections.Generic;
 
 public class CameraRoomManager : MonoBehaviour
 {
     [System.Serializable]
-    public class RoomBoundary
+    public class RoomCamera
     {
         public string roomName;
-        public PolygonCollider2D boundary;
+        public CinemachineVirtualCamera vcam;
     }
 
-    public RoomBoundary[] rooms;
-    public CinemachineConfiner2D confiner;
-    public float transitionDelay = 0.8f;
+    public RoomCamera[] roomCameras;
+    public string currentRoom;
 
-    private string currentRoom;
-    private Coroutine transitionCoroutine;
+    private Dictionary<string, CinemachineVirtualCamera> cameraMap;
 
-    public string CurrentRoom => currentRoom;
+    private void Start()
+    {
+        cameraMap = new Dictionary<string, CinemachineVirtualCamera>();
+        if (roomCameras != null)
+        {
+            foreach (var rc in roomCameras)
+            {
+                if (rc.vcam != null)
+                {
+                    cameraMap[rc.roomName] = rc.vcam;
+                    Debug.Log($"[CameraRoom] 注册房间相机: {rc.roomName}, Priority={rc.vcam.Priority}");
+                }
+            }
+        }
+
+        Debug.Log($"[CameraRoom] 共 {cameraMap.Count} 个房间相机");
+
+        // 根据玩家位置设置初始房间
+        var player = GameObject.FindWithTag("Player");
+        if (player != null)
+        {
+            string initRoom = FindRoomAtPosition(player.transform.position);
+            Debug.Log($"[CameraRoom] 玩家位置={player.transform.position}, 初始房间={initRoom}");
+            if (!string.IsNullOrEmpty(initRoom))
+                SwitchRoom(initRoom);
+        }
+        else
+        {
+            Debug.LogWarning("[CameraRoom] 找不到 Player");
+        }
+    }
 
     public void SwitchRoom(string newRoom)
     {
         if (string.IsNullOrEmpty(newRoom) || newRoom == currentRoom) return;
-        if (rooms == null || rooms.Length == 0) return;
+        if (cameraMap == null || !cameraMap.ContainsKey(newRoom)) return;
 
-        if (transitionCoroutine != null)
-            StopCoroutine(transitionCoroutine);
+        Debug.Log($"[CameraRoom] 切换: {currentRoom} → {newRoom}");
 
-        transitionCoroutine = StartCoroutine(TransitionRoom(newRoom));
-    }
-
-    private IEnumerator TransitionRoom(string newRoom)
-    {
-        var oldBound = GetBoundary(currentRoom);
-        var newBound = GetBoundary(newRoom);
-        if (newBound == null) yield break;
-
-        // 创建临时合并碰撞体（新旧房间路径）
-        var temp = gameObject.AddComponent<PolygonCollider2D>();
-        temp.isTrigger = true;
-        int idx = 0;
-        if (oldBound != null)
-            temp.SetPath(idx++, oldBound.GetPath(0));
-        temp.SetPath(idx, newBound.GetPath(0));
-
-        // 切换到合并边界
-        confiner.m_BoundingShape2D = temp;
-        confiner.InvalidateCache();
-
-        // 等待相机平滑过渡
-        yield return new WaitForSeconds(transitionDelay);
-
-        // 切换到只有新房间的边界
-        confiner.m_BoundingShape2D = newBound;
-        confiner.InvalidateCache();
-        currentRoom = newRoom;
-
-        // 清理临时碰撞体
-        Destroy(temp);
-        transitionCoroutine = null;
-    }
-
-    private PolygonCollider2D GetBoundary(string roomName)
-    {
-        if (string.IsNullOrEmpty(roomName) || rooms == null) return null;
-        foreach (var r in rooms)
-            if (r.roomName == roomName) return r.boundary;
-        return null;
-    }
-
-    public void SetInitialRoom(string roomName)
-    {
-        currentRoom = roomName;
-        var bound = GetBoundary(roomName);
-        if (bound != null && confiner != null)
+        // 禁用所有房间相机
+        foreach (var kvp in cameraMap)
         {
-            confiner.m_BoundingShape2D = bound;
-            confiner.InvalidateCache();
+            kvp.Value.Priority = 0;
         }
+
+        // 激活目标房间相机
+        cameraMap[newRoom].Priority = 100;
+        currentRoom = newRoom;
     }
 
     public string FindRoomAtPosition(Vector2 worldPos)
     {
-        if (rooms == null) return null;
-        foreach (var r in rooms)
+        // 用场景中的 RoomBounds_Xxx 检测
+        var roomBounds = FindObjectsOfType<PolygonCollider2D>();
+        foreach (var col in roomBounds)
         {
-            if (r.boundary == null) continue;
-            if (r.boundary.OverlapPoint(worldPos))
-                return r.roomName;
+            if (!col.name.StartsWith("RoomBounds_")) continue;
+            if (col.OverlapPoint(worldPos))
+                return col.name.Replace("RoomBounds_", "");
         }
         return null;
     }

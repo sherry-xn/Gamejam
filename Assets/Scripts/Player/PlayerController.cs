@@ -217,6 +217,7 @@ public class PlayerController : MonoBehaviour
 
     private void RotatePlayer()
     {
+        if (StoryPanel.IsShowing) return;
         if (!hasCachedLookDirection)
         {
             return;

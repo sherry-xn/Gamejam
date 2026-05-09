@@ -1,5 +1,10 @@
 Shader "Hidden/PlayerVisionMask"
 {
+    Properties
+    {
+        [HideInInspector] _MainTex ("Dummy", 2D) = "white" {}
+    }
+
     SubShader
     {
         Tags

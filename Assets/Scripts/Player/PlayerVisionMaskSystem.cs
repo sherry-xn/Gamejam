@@ -31,6 +31,7 @@ public class PlayerVisionMaskSystem : MonoBehaviour
     private Canvas maskCanvas;
     private Image maskImage;
     private Material maskMaterial;
+    private bool forceHidden;
 
     private static PlayerVisionMaskSystem instance;
 
@@ -50,6 +51,12 @@ public class PlayerVisionMaskSystem : MonoBehaviour
     private void OnEnable()
     {
         SceneManager.sceneLoaded += OnSceneLoaded;
+        if (forceHidden)
+        {
+            SetMaskVisualActive(false);
+            return;
+        }
+
         SetMaskVisualActive(TryBindSceneObjects());
     }
 
@@ -70,11 +77,23 @@ public class PlayerVisionMaskSystem : MonoBehaviour
     {
         mainCamera = null;
         player = null;
+        if (forceHidden)
+        {
+            SetMaskVisualActive(false);
+            return;
+        }
+
         SetMaskVisualActive(TryBindSceneObjects());
     }
 
     private void LateUpdate()
     {
+        if (forceHidden)
+        {
+            SetMaskVisualActive(false);
+            return;
+        }
+
         if (!TryBindSceneObjects())
         {
             SetMaskVisualActive(false);
@@ -158,6 +177,19 @@ public class PlayerVisionMaskSystem : MonoBehaviour
         {
             maskCanvas.gameObject.SetActive(active);
         }
+    }
+
+    public void SetForceHidden(bool hidden)
+    {
+        forceHidden = hidden;
+
+        if (hidden)
+        {
+            SetMaskVisualActive(false);
+            return;
+        }
+
+        SetMaskVisualActive(TryBindSceneObjects());
     }
 
     private void UpdateMaskMaterial()

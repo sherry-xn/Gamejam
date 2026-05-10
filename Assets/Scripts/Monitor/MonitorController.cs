@@ -44,6 +44,7 @@ public class MonitorController : MonoBehaviour
     private GameObject monitorCameraRoot;
     private CinemachineBrain brainRef;
     private CinemachineBlendDefinition savedBlend;
+    private Coroutine restoreBlendCoroutine;
 
     public bool IsMonitorOpen => isMonitorOpen;
 
@@ -135,16 +136,23 @@ public class MonitorController : MonoBehaviour
         // 恢复玩家视觉遮罩
         SetVisionMaskEnabled(true);
 
+        // 关闭监控时强制瞬切回角色相机，避免沿用 monitor 的 blend 过渡
+        if (brainRef != null)
+        {
+            brainRef.m_DefaultBlend = new CinemachineBlendDefinition(CinemachineBlendDefinition.Style.Cut, 0f);
+        }
+
         // 恢复原来房间视角
         var camRoomManager = FindObjectOfType<CameraRoomManager>();
         if (camRoomManager != null && !string.IsNullOrEmpty(savedRoom))
             camRoomManager.SwitchRoom(savedRoom);
 
-        // 恢复相机混合模式
+        // 下一帧再恢复原本的混合模式，保证当前切换是瞬切
         if (brainRef != null)
         {
-            brainRef.m_DefaultBlend = savedBlend;
-            brainRef = null;
+            if (restoreBlendCoroutine != null)
+                StopCoroutine(restoreBlendCoroutine);
+            restoreBlendCoroutine = StartCoroutine(RestoreBlendNextFrame(savedBlend));
         }
 
         // 恢复怪物
@@ -158,6 +166,18 @@ public class MonitorController : MonoBehaviour
         isOnCooldown = true;
         lastCloseTime = Time.unscaledTime;
         StartCoroutine(CooldownCoroutine());
+    }
+
+    private IEnumerator RestoreBlendNextFrame(CinemachineBlendDefinition blend)
+    {
+        yield return null;
+
+        if (brainRef != null)
+        {
+            brainRef.m_DefaultBlend = blend;
+        }
+
+        restoreBlendCoroutine = null;
     }
 
     public void NextCamera()
@@ -204,10 +224,7 @@ public class MonitorController : MonoBehaviour
         var mask = FindObjectOfType<PlayerVisionMaskSystem>();
         if (mask == null) return;
 
-        // 直接控制遮罩 Canvas 的显示/隐藏
-        var canvas = mask.GetComponentInChildren<Canvas>(true);
-        if (canvas != null)
-            canvas.gameObject.SetActive(enabled);
+        mask.SetForceHidden(!enabled);
     }
 
     private void BuildCameras()

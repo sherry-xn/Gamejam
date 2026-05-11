@@ -8,6 +8,8 @@ public class MainDoor : MonoBehaviour
 {
     [SerializeField] private SpriteRenderer doorSprite;
     [SerializeField, Range(0f, 1f)] private float unlockedAlpha = 0.5f;
+    [SerializeField, Min(1)] private int requiredKeys = 3;
+    [SerializeField] private string missingKeysMessage = "钥匙不够，无法打开大门";
 
     private bool isUnlocked = false;
 
@@ -18,10 +20,9 @@ public class MainDoor : MonoBehaviour
     {
         if (isUnlocked) return;
 
-        var keyManager = FindObjectOfType<KeyManager>();
-        if (keyManager == null || !keyManager.HasAllKeys())
+        if (!HasEnoughKeys(player))
         {
-            // 钥匙不足
+            ScreenHintPanel.Show(missingKeysMessage);
             return;
         }
 
@@ -41,5 +42,14 @@ public class MainDoor : MonoBehaviour
         // 触发逃脱
         if (GameManager.Instance != null)
             GameManager.Instance.OnPlayerEscape();
+    }
+
+    private bool HasEnoughKeys(PlayerController player)
+    {
+        var keyManager = FindObjectOfType<KeyManager>();
+        int targetKeyCount = keyManager != null ? keyManager.totalKeys : requiredKeys;
+
+        return (player != null && player.CurrentKey >= targetKeyCount)
+            || (keyManager != null && keyManager.HasAllKeys());
     }
 }

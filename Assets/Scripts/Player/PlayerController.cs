@@ -164,6 +164,7 @@ public class PlayerController : MonoBehaviour
         damage = Mathf.Clamp(damage, 0, CurrentHealth);
         CurrentHealth -= damage;
         SyncHealthBarUI();
+        HurtUI.Show();
 
         if (CurrentHealth <= 0)
         {

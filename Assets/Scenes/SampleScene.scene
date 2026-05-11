@@ -2577,6 +2577,54 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 533897611}
   m_CullTransparentMesh: 1
+--- !u!1 &536215799
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 7
+  m_Component:
+  - component: {fileID: 536215801}
+  - component: {fileID: 536215800}
+  m_Layer: 0
+  m_HasEditorInfo: 1
+  m_Name: '[HurtUI]'
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &536215800
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 536215799}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0eb08609dd72f1446b2ac4d66b2f10b5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  displayDuration: 0.15
+  fadeDuration: 0.3
+  hurtSprite: {fileID: 21300000, guid: f7762799ecd62294f9a7bcb98c9d49bc, type: 3}
+--- !u!4 &536215801
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 536215799}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 40.257687, y: -6.651581, z: -0.46088126}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &645735996 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 2763960206963077493, guid: ea8090cb3400c864589a59394a86f51c, type: 3}
@@ -9102,7 +9150,7 @@ GameObject:
   - component: {fileID: 2059579107}
   m_Layer: 0
   m_HasEditorInfo: 1
-  m_Name: GameObject
+  m_Name: '[GameManager]'
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -9122,6 +9170,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mainMenuSceneName: MainMenu
   gameSceneName: SampleScene
+  victoryMenuPrefab: {fileID: 0}
+  failureMenuPrefab: {fileID: 0}
   gameOverDelay: 3
   escapeDelay: 5
 --- !u!4 &2059579108
@@ -9261,3 +9311,4 @@ SceneRoots:
   - {fileID: 527802970}
   - {fileID: 2059579108}
   - {fileID: 305409859}
+  - {fileID: 536215801}

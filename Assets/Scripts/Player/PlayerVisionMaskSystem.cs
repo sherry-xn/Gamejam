@@ -25,6 +25,7 @@ public class PlayerVisionMaskSystem : MonoBehaviour
     [SerializeField, Min(0.001f)] private float coneAngleSoftness = 0.05f;
 
     private const string ShaderName = "Hidden/PlayerVisionMask";
+    private const int MaskSortingOrder = -100;
 
     private Camera mainCamera;
     private Transform player;
@@ -134,10 +135,10 @@ public class PlayerVisionMaskSystem : MonoBehaviour
 
             maskCanvas = canvasObj.AddComponent<Canvas>();
             maskCanvas.renderMode = RenderMode.ScreenSpaceOverlay;
-            maskCanvas.sortingOrder = short.MaxValue - 1;
             canvasObj.AddComponent<CanvasScaler>();
-            canvasObj.AddComponent<GraphicRaycaster>();
         }
+
+        maskCanvas.sortingOrder = MaskSortingOrder;
 
         if (maskImage == null)
         {

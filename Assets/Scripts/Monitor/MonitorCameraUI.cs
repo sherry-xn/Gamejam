@@ -23,9 +23,11 @@ public class MonitorCameraUI : MonoBehaviour
     private Text cameraInfoText;
 
     private Image cameraFeedImage;
+    private CanvasGroup canvasGroup;
 
     private void Awake()
     {
+        SetupCanvasGroup();
         SetupVisuals();
         SetupCameraFeedImage();
         SetupCameraInfoText();
@@ -49,6 +51,7 @@ public class MonitorCameraUI : MonoBehaviour
     /// </summary>
     public void Show()
     {
+        SetVisible(true);
         if (cameraFeedImage != null) cameraFeedImage.enabled = cameraFeedImage.sprite != null;
         if (ui_monitoring_bg != null) ui_monitoring_bg.enabled = true;
         if (ui_monitoring_rec != null) ui_monitoring_rec.enabled = true;
@@ -65,6 +68,8 @@ public class MonitorCameraUI : MonoBehaviour
         if (ui_monitoring_bg != null) ui_monitoring_bg.enabled = false;
         if (ui_monitoring_rec != null) ui_monitoring_rec.enabled = false;
         if (cameraInfoText != null) cameraInfoText.enabled = false;
+        if (signalLostOverlay != null) signalLostOverlay.enabled = false;
+        SetVisible(false);
     }
 
     public void SetCameraFeed(Sprite feedSprite)
@@ -116,6 +121,23 @@ public class MonitorCameraUI : MonoBehaviour
             signalLostOverlay.color = new Color(1f, 1f, 1f, 1f);
             signalLostOverlay.raycastTarget = false;
         }
+    }
+
+    private void SetupCanvasGroup()
+    {
+        canvasGroup = GetComponent<CanvasGroup>();
+        if (canvasGroup == null)
+            canvasGroup = gameObject.AddComponent<CanvasGroup>();
+    }
+
+    private void SetVisible(bool visible)
+    {
+        if (canvasGroup == null)
+            SetupCanvasGroup();
+
+        canvasGroup.alpha = visible ? 1f : 0f;
+        canvasGroup.interactable = visible;
+        canvasGroup.blocksRaycasts = visible;
     }
 
     private void SetupCameraFeedImage()

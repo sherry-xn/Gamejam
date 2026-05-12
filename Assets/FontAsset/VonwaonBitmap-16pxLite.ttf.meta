@@ -1,0 +1,21 @@
+fileFormatVersion: 2
+guid: BnIesX/7Ui1lIVBK8+L2Vn+i7vU7QqYIcrmvEcRH9Yz2tqrgBWIOpyM=
+TrueTypeFontImporter:
+  externalObjects: {}
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontNames:
+  - VonwaonBitmap 16px Lite
+  fallbackFontReferences: []
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  useLegacyBoundsCalculation: 0
+  shouldRoundAdvanceValue: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

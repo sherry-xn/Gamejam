@@ -507,6 +507,9 @@ public class MonitorController : MonoBehaviour
 
         yield return new WaitForSecondsRealtime(signalRecoverTime);
 
+        if (!isMonitorOpen)
+            yield break;
+
         isSignalLost = false;
         ShowCamera(currentCameraIndex);
     }

@@ -6,10 +6,21 @@ using System.Linq;
 
 public class CameraBoundsSetup : EditorWindow
 {
+    private struct RoomRect
+    {
+        public string name;
+        public float minX;
+        public float minY;
+        public float maxX;
+        public float maxY;
+    }
+
     private PolygonCollider2D boundsCollider;
     private string prefabFolder = "Assets/Prefabs";
     private string[] wallKeywords = { "boundary", "Wall", "wall" };
-    private float cameraPadding = 0.5f;
+    private float cameraExpansion = 0.5f;
+    private float confinerPadding = 0.1f;
+    private float confinerDamping = 0.5f;
     private float maxWallSize = 50f;
 
     [MenuItem("Tools/相机边界设置")]
@@ -38,7 +49,9 @@ public class CameraBoundsSetup : EditorWindow
             "合并到 PolygonCollider2D 中。",
             MessageType.Info);
 
-        cameraPadding = EditorGUILayout.FloatField("边界内缩量", cameraPadding);
+        cameraExpansion = EditorGUILayout.FloatField("边界外扩量", cameraExpansion);
+        confinerPadding = EditorGUILayout.FloatField("Confiner 边缘稳定 Padding", confinerPadding);
+        confinerDamping = EditorGUILayout.FloatField("Confiner 边缘平滑 Damping", confinerDamping);
         maxWallSize = EditorGUILayout.FloatField("最大墙体尺寸", maxWallSize);
         EditorGUILayout.HelpBox("超过此尺寸的 boundary sprite 会被跳过（避免超大 sprite 拉大矩形）", MessageType.None);
 
@@ -270,7 +283,7 @@ public class CameraBoundsSetup : EditorWindow
         }
 
         // 2. 每个 prefab 实例计算 AABB 矩形
-        var allPaths = new List<Vector2[]>();
+        var rawRects = new List<RoomRect>();
 
         foreach (var kvp in groups)
         {
@@ -288,16 +301,37 @@ public class CameraBoundsSetup : EditorWindow
                 if (r.yMax > maxY) maxY = r.yMax;
             }
 
-            minX += cameraPadding;
-            minY += cameraPadding;
-            maxX -= cameraPadding;
-            maxY -= cameraPadding;
-
             if (maxX - minX < 0.1f || maxY - minY < 0.1f)
             {
                 Debug.LogWarning($"[{rootName}] 矩形太小，跳过");
                 continue;
             }
+
+            rawRects.Add(new RoomRect
+            {
+                name = rootName,
+                minX = minX,
+                minY = minY,
+                maxX = maxX,
+                maxY = maxY
+            });
+        }
+
+        var allPaths = new List<Vector2[]>();
+
+        foreach (var raw in rawRects)
+        {
+            float minX = raw.minX;
+            float minY = raw.minY;
+            float maxX = raw.maxX;
+            float maxY = raw.maxY;
+
+            // Only expand edges that face open space. Expanding shared edges makes
+            // neighboring PolygonCollider2D paths overlap, which can break Confiner2D.
+            if (!HasNeighborOnSide(raw, rawRects, Vector2.left)) minX -= cameraExpansion;
+            if (!HasNeighborOnSide(raw, rawRects, Vector2.down)) minY -= cameraExpansion;
+            if (!HasNeighborOnSide(raw, rawRects, Vector2.right)) maxX += cameraExpansion;
+            if (!HasNeighborOnSide(raw, rawRects, Vector2.up)) maxY += cameraExpansion;
 
             var rect = new Vector2[]
             {
@@ -308,7 +342,7 @@ public class CameraBoundsSetup : EditorWindow
             };
 
             allPaths.Add(rect);
-            Debug.Log($"[{rootName}] 矩形: ({minX:F1},{minY:F1}) - ({maxX:F1},{maxY:F1}) size=({maxX-minX:F1},{maxY-minY:F1})");
+            Debug.Log($"[{raw.name}] 矩形: ({minX:F1},{minY:F1}) - ({maxX:F1},{maxY:F1}) size=({maxX-minX:F1},{maxY-minY:F1})");
         }
 
         if (allPaths.Count == 0)
@@ -348,10 +382,7 @@ public class CameraBoundsSetup : EditorWindow
         if (confiner == null)
             confiner = Undo.AddComponent<CinemachineConfiner2D>(vcam.gameObject);
 
-        confiner.m_BoundingShape2D = boundsCollider;
-        confiner.m_Damping = 0.5f;
-        confiner.m_MaxWindowSize = 0;
-        confiner.InvalidateCache();
+        ConfigureConfiner(confiner, boundsCollider);
 
         // 6. 清理旧 Composite
         var old = GameObject.Find("CameraComposite");
@@ -364,6 +395,47 @@ public class CameraBoundsSetup : EditorWindow
             $"房间区域: {allPaths.Count} 个\n\n" +
             $"请在 Scene 视图中查看 CameraBounds。",
             "确定");
+    }
+
+    private bool HasNeighborOnSide(RoomRect room, List<RoomRect> rooms, Vector2 side)
+    {
+        float tolerance = Mathf.Max(0.05f, cameraExpansion * 2f + 0.05f);
+
+        foreach (var other in rooms)
+        {
+            if (other.name == room.name) continue;
+
+            if (side == Vector2.left || side == Vector2.right)
+            {
+                bool overlapsY = room.minY < other.maxY - 0.01f && room.maxY > other.minY + 0.01f;
+                if (!overlapsY) continue;
+
+                float gap = side == Vector2.left ? room.minX - other.maxX : other.minX - room.maxX;
+                if (gap >= -tolerance && gap <= tolerance)
+                    return true;
+            }
+            else
+            {
+                bool overlapsX = room.minX < other.maxX - 0.01f && room.maxX > other.minX + 0.01f;
+                if (!overlapsX) continue;
+
+                float gap = side == Vector2.down ? room.minY - other.maxY : other.minY - room.maxY;
+                if (gap >= -tolerance && gap <= tolerance)
+                    return true;
+            }
+        }
+
+        return false;
+    }
+
+    private void ConfigureConfiner(CinemachineConfiner2D confiner, Collider2D boundary)
+    {
+        confiner.m_BoundingShape2D = boundary;
+        confiner.m_Damping = Mathf.Max(0f, confinerDamping);
+        confiner.m_MaxWindowSize = 0;
+        confiner.m_Padding = Mathf.Max(0f, confinerPadding);
+        confiner.InvalidateCache();
+        EditorUtility.SetDirty(confiner);
     }
 
     // ========== 第2步：房间切换系统 ==========
@@ -703,10 +775,7 @@ public class CameraBoundsSetup : EditorWindow
             if (confiner == null)
                 confiner = Undo.AddComponent<CinemachineConfiner2D>(camGo);
 
-            confiner.m_BoundingShape2D = boundary;
-            confiner.m_Damping = 0.5f;
-            confiner.m_MaxWindowSize = 0;
-            confiner.InvalidateCache();
+            ConfigureConfiner(confiner, boundary);
 
             roomCameraList.Add(new CameraRoomManager.RoomCamera
             {
@@ -727,9 +796,7 @@ public class CameraBoundsSetup : EditorWindow
             if (cameraBoundsGo != null)
             {
                 originalConfiner.m_BoundingShape2D = cameraBoundsGo.GetComponent<PolygonCollider2D>();
-                originalConfiner.m_Damping = 0.5f;
-                originalConfiner.m_MaxWindowSize = 0;
-                originalConfiner.InvalidateCache();
+                ConfigureConfiner(originalConfiner, originalConfiner.m_BoundingShape2D);
             }
             originalConfiner.enabled = true;
         }

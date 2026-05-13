@@ -26,6 +26,8 @@ public class CameraRoomManager : MonoBehaviour
     private bool autoAlignRoomCamerasToBounds = true;
     [SerializeField, Tooltip("Z position used when auto-aligning room cameras.")]
     private float roomCameraZ = -30f;
+    [SerializeField, Min(0f), Tooltip("Small Confiner2D padding that prevents edge jumps when a camera window is close to the room bounds.")]
+    private float confinerPadding = 0.1f;
 
     [Header("Room Key Hint")]
     [SerializeField, Tooltip("Show how many uncollected keys are in a room when the player enters it.")]
@@ -148,6 +150,7 @@ public class CameraRoomManager : MonoBehaviour
             confiner.m_BoundingShape2D = boundary;
             confiner.m_Damping = 0f;
             confiner.m_MaxWindowSize = 0;
+            confiner.m_Padding = confinerPadding;
             confiner.InvalidateCache();
         }
     }

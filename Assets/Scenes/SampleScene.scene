@@ -1932,7 +1932,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 4.17
+  orthographic size: 5
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -1959,7 +1959,7 @@ Transform:
   m_GameObject: {fileID: 519420028}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 4.956468, y: -0.47998998, z: -10}
+  m_LocalPosition: {x: 4.707118, y: -0.47998998, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2524,38 +2524,38 @@ PolygonCollider2D:
   m_AutoTiling: 0
   m_Points:
     m_Paths:
-    - - {x: -0.27569962, y: -4.321144}
-      - {x: 10.193056, y: -4.321144}
-      - {x: 10.193056, y: 4.273816}
-      - {x: -0.27569962, y: 4.273816}
-    - - {x: 24.552797, y: -26.371094}
-      - {x: 69.11043, y: -26.371094}
-      - {x: 69.11043, y: -5.9689674}
-      - {x: 24.552797, y: -5.9689674}
-    - - {x: 10.976451, y: -6.700975}
-      - {x: 86.762314, y: -6.700975}
-      - {x: 86.762314, y: 4.7590804}
-      - {x: 10.976451, y: 4.7590804}
-    - - {x: 27.277363, y: 20.223358}
-      - {x: 37.300175, y: 20.223358}
-      - {x: 37.300175, y: 34.053}
-      - {x: 27.277363, y: 34.053}
-    - - {x: 27.014908, y: 34.58297}
-      - {x: 72.94478, y: 34.58297}
-      - {x: 72.94478, y: 57.359283}
-      - {x: 27.014908, y: 57.359283}
-    - - {x: 19.407104, y: 5.7582626}
-      - {x: 38.486774, y: 5.7582626}
-      - {x: 38.486774, y: 19.524624}
-      - {x: 19.407104, y: 19.524624}
-    - - {x: 54.61305, y: 5.4944077}
-      - {x: 77.018814, y: 5.4944077}
-      - {x: 77.018814, y: 19.141687}
-      - {x: 54.61305, y: 19.141687}
-    - - {x: 60.607365, y: 20.223358}
-      - {x: 70.63018, y: 20.223358}
-      - {x: 70.63018, y: 34.053}
-      - {x: 60.607365, y: 34.053}
+    - - {x: -1.2756996, y: -5.321144}
+      - {x: 10.693056, y: -5.321144}
+      - {x: 10.693056, y: 5.273816}
+      - {x: -1.2756996, y: 5.273816}
+    - - {x: 23.552797, y: -27.371094}
+      - {x: 70.11043, y: -27.371094}
+      - {x: 70.11043, y: -4.9689674}
+      - {x: 23.552797, y: -4.9689674}
+    - - {x: 26.277363, y: 19.723358}
+      - {x: 38.300175, y: 19.723358}
+      - {x: 38.300175, y: 34.553}
+      - {x: 26.277363, y: 34.553}
+    - - {x: 18.407104, y: 5.2582626}
+      - {x: 39.486774, y: 5.2582626}
+      - {x: 39.486774, y: 20.024624}
+      - {x: 18.407104, y: 20.024624}
+    - - {x: 10.740805, y: -5.62391}
+      - {x: 82.09759, y: -5.510616}
+      - {x: 82.05982, y: 5.221316}
+      - {x: 10.476451, y: 5.2590804}
+    - - {x: 53.61305, y: 4.9944077}
+      - {x: 78.018814, y: 4.9944077}
+      - {x: 78.018814, y: 19.641687}
+      - {x: 53.61305, y: 19.641687}
+    - - {x: 59.607365, y: 19.723358}
+      - {x: 71.63018, y: 19.723358}
+      - {x: 71.63018, y: 34.553}
+      - {x: 59.607365, y: 34.553}
+    - - {x: 26.014908, y: 34.08297}
+      - {x: 73.94478, y: 34.08297}
+      - {x: 73.94478, y: 58.359283}
+      - {x: 26.014908, y: 58.359283}
   m_UseDelaunayMesh: 0
 --- !u!4 &721400870
 Transform:
@@ -2696,6 +2696,7 @@ MonoBehaviour:
   controlRoomCameraPriorities: 0
   autoAlignRoomCamerasToBounds: 1
   roomCameraZ: -30
+  confinerPadding: 0.1
   showRoomKeyHint: 1
   roomKeyHintFormat: "\u8FD9\u4E2A\u623F\u95F4\u91CC\u6709 {0} \u628A\u94A5\u5319"
   detectPlayerRoomForKeyHint: 1
@@ -2912,9 +2913,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BoundingShape2D: {fileID: 1220558829}
-  m_Damping: 0.5
+  m_Damping: 0
   m_MaxWindowSize: 0
-  m_Padding: 0
+  m_Padding: 0.1
 --- !u!114 &866221934
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2937,7 +2938,7 @@ MonoBehaviour:
   m_Follow: {fileID: 0}
   m_Lens:
     FieldOfView: 60
-    OrthographicSize: 4.17
+    OrthographicSize: 5
     NearClipPlane: 0.3
     FarClipPlane: 1000
     Dutch: 0
@@ -3909,9 +3910,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BoundingShape2D: {fileID: 2027215711}
-  m_Damping: 0.5
+  m_Damping: 0
   m_MaxWindowSize: 0
-  m_Padding: 0
+  m_Padding: 0.1
 --- !u!114 &1258163382
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3934,7 +3935,7 @@ MonoBehaviour:
   m_Follow: {fileID: 0}
   m_Lens:
     FieldOfView: 60
-    OrthographicSize: 4.17
+    OrthographicSize: 5
     NearClipPlane: 0.3
     FarClipPlane: 1000
     Dutch: 0
@@ -4459,9 +4460,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BoundingShape2D: {fileID: 914862246}
-  m_Damping: 0.5
+  m_Damping: 0
   m_MaxWindowSize: 0
-  m_Padding: 0
+  m_Padding: 0.1
 --- !u!114 &1475021358
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4484,7 +4485,7 @@ MonoBehaviour:
   m_Follow: {fileID: 0}
   m_Lens:
     FieldOfView: 60
-    OrthographicSize: 4.17
+    OrthographicSize: 5
     NearClipPlane: 0.3
     FarClipPlane: 1000
     Dutch: 0
@@ -4744,7 +4745,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 1.18, y: 6.02}
+    oldSize: {x: 2.17, y: 9.92}
     newSize: {x: 1, y: 1}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -4790,7 +4791,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 1.18, y: 6.02}
+    oldSize: {x: 2.17, y: 9.92}
     newSize: {x: 1, y: 1}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -5087,9 +5088,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BoundingShape2D: {fileID: 452052210}
-  m_Damping: 0.5
+  m_Damping: 0
   m_MaxWindowSize: 0
-  m_Padding: 0
+  m_Padding: 0.1
 --- !u!114 &1703439581
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5112,7 +5113,7 @@ MonoBehaviour:
   m_Follow: {fileID: 0}
   m_Lens:
     FieldOfView: 60
-    OrthographicSize: 4.17
+    OrthographicSize: 5
     NearClipPlane: 0.3
     FarClipPlane: 1000
     Dutch: 0
@@ -5170,7 +5171,7 @@ MonoBehaviour:
   m_Follow: {fileID: 1883391182}
   m_Lens:
     FieldOfView: 60
-    OrthographicSize: 4.17
+    OrthographicSize: 5
     NearClipPlane: 0.3
     FarClipPlane: 1000
     Dutch: 0
@@ -5216,9 +5217,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BoundingShape2D: {fileID: 721400869}
-  m_Damping: 0.5
+  m_Damping: 0
   m_MaxWindowSize: 0
-  m_Padding: 0
+  m_Padding: 0.1
 --- !u!1 &1754089089 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 4424730442755154312, guid: f8c2d0c1c0801514d9a0962bd41d8005, type: 3}
@@ -5469,9 +5470,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BoundingShape2D: {fileID: 1336438900}
-  m_Damping: 0.5
+  m_Damping: 0
   m_MaxWindowSize: 0
-  m_Padding: 0
+  m_Padding: 0.1
 --- !u!114 &1835094813
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5494,7 +5495,7 @@ MonoBehaviour:
   m_Follow: {fileID: 0}
   m_Lens:
     FieldOfView: 60
-    OrthographicSize: 4.17
+    OrthographicSize: 5
     NearClipPlane: 0.3
     FarClipPlane: 1000
     Dutch: 0
@@ -6075,9 +6076,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BoundingShape2D: {fileID: 1401403165}
-  m_Damping: 0.5
+  m_Damping: 0
   m_MaxWindowSize: 0
-  m_Padding: 0
+  m_Padding: 0.1
 --- !u!114 &1982849049
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6100,7 +6101,7 @@ MonoBehaviour:
   m_Follow: {fileID: 0}
   m_Lens:
     FieldOfView: 60
-    OrthographicSize: 4.17
+    OrthographicSize: 5
     NearClipPlane: 0.3
     FarClipPlane: 1000
     Dutch: 0

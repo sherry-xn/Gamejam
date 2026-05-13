@@ -2,6 +2,33 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
+[CreateAssetMenu(fileName = "PlayerVisionMaskSettings", menuName = "Game/Player Vision Mask Settings")]
+public class PlayerVisionMaskSettings : ScriptableObject
+{
+    [Header("Darkness")]
+    [SerializeField] private Color darknessColor = Color.black;
+    [SerializeField, Range(0f, 1f)] private float darknessAlpha = 0.9f;
+
+    [Header("Near Visibility")]
+    [SerializeField, Min(0f)] private float innerRadius = 0.12f;
+
+    [Header("Flashlight")]
+    [SerializeField, Min(0f)] private float coneRange = 0.75f;
+    [SerializeField, Range(1f, 179f)] private float coneAngle = 70f;
+
+    [Header("Edge Softness")]
+    [SerializeField, Min(0.001f)] private float edgeSoftness = 0.05f;
+    [SerializeField, Min(0.001f)] private float coneAngleSoftness = 0.05f;
+
+    public Color DarknessColor => darknessColor;
+    public float DarknessAlpha => darknessAlpha;
+    public float InnerRadius => innerRadius;
+    public float ConeRange => coneRange;
+    public float ConeAngle => coneAngle;
+    public float EdgeSoftness => edgeSoftness;
+    public float ConeAngleSoftness => coneAngleSoftness;
+}
+
 /// <summary>
 /// 在屏幕上绘制一层黑色遮罩，并在玩家周围挖出可见区域：
 /// 1) 玩家身边一个小圆形常亮；
@@ -9,6 +36,10 @@ using UnityEngine.UI;
 /// </summary>
 public class PlayerVisionMaskSystem : MonoBehaviour
 {
+    private const string SettingsResourcePath = "PlayerVisionMaskSettings";
+
+    [Header("Settings")]
+    [SerializeField] private PlayerVisionMaskSettings settings;
     [Header("遮罩")]
     [SerializeField] private Color darknessColor = Color.black;
     [SerializeField, Range(0f, 1f)] private float darknessAlpha = 0.9f;
@@ -51,6 +82,7 @@ public class PlayerVisionMaskSystem : MonoBehaviour
 
     private void OnEnable()
     {
+        LoadSettingsIfNeeded();
         SceneManager.sceneLoaded += OnSceneLoaded;
         if (forceHidden)
         {
@@ -76,6 +108,7 @@ public class PlayerVisionMaskSystem : MonoBehaviour
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
+        LoadSettingsIfNeeded();
         mainCamera = null;
         player = null;
         if (forceHidden)
@@ -208,15 +241,25 @@ public class PlayerVisionMaskSystem : MonoBehaviour
             facingDir.Normalize();
         }
 
-        maskMaterial.SetColor("_DarknessColor", darknessColor);
-        maskMaterial.SetFloat("_DarknessAlpha", darknessAlpha);
+        maskMaterial.SetColor("_DarknessColor", settings != null ? settings.DarknessColor : darknessColor);
+        maskMaterial.SetFloat("_DarknessAlpha", settings != null ? settings.DarknessAlpha : darknessAlpha);
         maskMaterial.SetVector("_PlayerViewportPos", new Vector4(playerViewport.x, playerViewport.y, 0f, 0f));
         maskMaterial.SetVector("_FacingDir", new Vector4(facingDir.x, facingDir.y, 0f, 0f));
-        maskMaterial.SetFloat("_InnerRadius", innerRadius);
-        maskMaterial.SetFloat("_ConeRange", coneRange);
-        maskMaterial.SetFloat("_ConeHalfAngleCos", Mathf.Cos(coneAngle * 0.5f * Mathf.Deg2Rad));
-        maskMaterial.SetFloat("_EdgeSoftness", edgeSoftness);
-        maskMaterial.SetFloat("_ConeAngleSoftness", coneAngleSoftness);
+        maskMaterial.SetFloat("_InnerRadius", settings != null ? settings.InnerRadius : innerRadius);
+        maskMaterial.SetFloat("_ConeRange", settings != null ? settings.ConeRange : coneRange);
+        maskMaterial.SetFloat("_ConeHalfAngleCos", Mathf.Cos((settings != null ? settings.ConeAngle : coneAngle) * 0.5f * Mathf.Deg2Rad));
+        maskMaterial.SetFloat("_EdgeSoftness", settings != null ? settings.EdgeSoftness : edgeSoftness);
+        maskMaterial.SetFloat("_ConeAngleSoftness", settings != null ? settings.ConeAngleSoftness : coneAngleSoftness);
         maskMaterial.SetFloat("_Aspect", (float)Screen.width / Mathf.Max(1f, Screen.height));
+    }
+
+    private void LoadSettingsIfNeeded()
+    {
+        if (settings != null)
+        {
+            return;
+        }
+
+        settings = Resources.Load<PlayerVisionMaskSettings>(SettingsResourcePath);
     }
 }

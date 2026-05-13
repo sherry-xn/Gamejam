@@ -1959,7 +1959,7 @@ Transform:
   m_GameObject: {fileID: 519420028}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 4.956468, y: -0.47998998, z: -10}
+  m_LocalPosition: {x: 4.9569955, y: -0.47998998, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2532,10 +2532,10 @@ PolygonCollider2D:
       - {x: 69.11043, y: -26.371094}
       - {x: 69.11043, y: -5.9689674}
       - {x: 24.552797, y: -5.9689674}
-    - - {x: 10.976451, y: -6.700975}
-      - {x: 86.762314, y: -6.700975}
-      - {x: 86.762314, y: 4.7590804}
-      - {x: 10.976451, y: 4.7590804}
+    - - {x: 10.524524, y: -5.7971206}
+      - {x: 82.11979, y: -5.550615}
+      - {x: 82.16087, y: 5.293176}
+      - {x: 10.647776, y: 5.0877547}
     - - {x: 27.277363, y: 20.223358}
       - {x: 37.300175, y: 20.223358}
       - {x: 37.300175, y: 34.053}
@@ -4744,7 +4744,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 1.18, y: 6.02}
+    oldSize: {x: 2.17, y: 9.92}
     newSize: {x: 1, y: 1}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -4790,7 +4790,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 1.18, y: 6.02}
+    oldSize: {x: 2.17, y: 9.92}
     newSize: {x: 1, y: 1}
     adaptiveTilingThreshold: 0.5
     drawMode: 0

@@ -18,10 +18,36 @@ public class GameManager : MonoBehaviour
 
     [Header("Black Screen Text")]
     [SerializeField] private bool showOpeningText = true;
-    [SerializeField, TextArea(3, 8)] private string openingText = "";
-    [SerializeField, TextArea(3, 8)] private string victoryText = "";
-    [SerializeField, TextArea(3, 8)] private string failureText = "";
-    [SerializeField] private string continueHint = "按任意键继续";
+    [SerializeField, TextArea(5, 12)]
+    private string openingText =
+        "黑鱼在模糊的红水中游弋，被细小的血管挟着，一股一股往前游。\n" +
+        "直到那怪物的目光挪走，眼前才黑下来。你睁开眼，眼前犹残存着血液流动的余象.\n"+
+        "今晚异样的安静，没有血，没有砰砰砰的脚步，也没有尖叫。从妈妈将自己送到这里以来，已经很久没有这样安静的夜。\n"+
+        "你摸了摸怀里藏着的监控平板。\n"+
+        "学校里充满了怪物，而自己，一定要逃出去。\n";
+
+    [SerializeField, TextArea(5, 12)]
+    private string victoryText =
+        "你见到了久违的天。\n"
+        + "蓝蓝的，仿佛要流淌下来的天。\n"
+        + "其中有一轮极为耀眼的圆。\n"
+        + "那是什么？\n"
+        + "眯着眼看了又看。\n"
+        + "直到金黄色的光线洒落在身上，将皮肤烫了一下，才后知后觉地\n"
+        + "想起那是阳光。\n"
+        + "是暖阳。\n"
+        + "接下来，要不去云南看看洱海吧。\n"
+        ;
+
+    [SerializeField, TextArea(5, 12)]
+    private string failureText =
+        "手电筒似乎损坏了，光亮褪去，黑暗涌上来，你像是被汹涌海浪冲刷着的一小块礁石，终于不堪重负碎裂开来，转眼被海浪席卷而去。\n" 
+        +"怪物抓住了你的脚，你只看见黑暗中森亮的白牙，和长长的钢铁做成的臂膀。\n"
+        +"那东西狠狠落在你身上，你痛地蜷缩起来。恍惚间似乎想起了什么，你呢喃。\n"
+        +"妈妈……\n"
+        +"妈妈在哪呢？";
+
+    [SerializeField] private string continueHint = "点击屏幕或按任意键继续";
 
     [SerializeField, Tooltip("Delay before restarting after game over if no end menu can be shown.")]
     private float gameOverDelay = 3f;

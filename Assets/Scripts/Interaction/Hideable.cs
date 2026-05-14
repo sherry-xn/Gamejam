@@ -5,12 +5,15 @@ using UnityEngine;
 public class Hideable : MonoBehaviour
 {
     [SerializeField] private Transform hidePoint;
+    [SerializeField, Tooltip("离开躲藏时放置玩家；不填则用进入躲藏前的世界坐标，避免仍在家具碰撞体内就恢复碰撞导致被挤出穿墙。")]
+    private Transform exitPoint;
     [SerializeField, Range(0f, 1f)] private float hiddenAlpha = 0.7f;
 
     private Collider2D col;
     private SpriteRenderer sr;
     private float originalAlpha;
     private readonly List<Collider2D> ignoredPlayerColliders = new List<Collider2D>();
+    private Vector3 worldPositionBeforeHide;
 
     private void Awake()
     {
@@ -26,6 +29,7 @@ public class Hideable : MonoBehaviour
 
     public void OnEnter(PlayerController player)
     {
+        worldPositionBeforeHide = player.transform.position;
         SetPlayerCollisionIgnored(player, true);
         if (sr != null)
         {
@@ -40,6 +44,13 @@ public class Hideable : MonoBehaviour
 
     public void OnExit(PlayerController player)
     {
+        // 先移到家具外再恢复碰撞：否则在 hidePoint 内与 Collider 重叠，物理解算可能把玩家挤出墙体。
+        Vector3 exitWorld = exitPoint != null ? exitPoint.position : worldPositionBeforeHide;
+        player.SetPlayerPosition(exitWorld);
+        if (player.Rigidbody != null)
+            player.Rigidbody.velocity = Vector2.zero;
+        Physics2D.SyncTransforms();
+
         SetPlayerCollisionIgnored(player, false);
         if (sr != null)
         {

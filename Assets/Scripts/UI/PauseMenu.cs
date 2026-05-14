@@ -85,13 +85,13 @@ public class PauseMenu : MonoBehaviour
 
         if (menuRoot != null)
         {
-            ConfigurePrefabButton("ResumeButton", "继续游戏", OnResume);
-            ConfigurePrefabButton("SettingsButton", "设置", OnSettings);
-            ConfigurePrefabButton("QuitButton", "返回主菜单", OnQuit);
+            ConfigurePrefabButton("ResumeButton", OnResume);
+            ConfigurePrefabButton("SettingsButton", OnSettings);
+            ConfigurePrefabButton("QuitButton", OnQuit);
         }
     }
 
-    private void ConfigurePrefabButton(string buttonName, string label, UnityEngine.Events.UnityAction onClick)
+    private void ConfigurePrefabButton(string buttonName, UnityEngine.Events.UnityAction onClick)
     {
         var buttonTransform = FindChildRecursive(menuRoot.transform, buttonName);
         if (buttonTransform == null)
@@ -104,59 +104,19 @@ public class PauseMenu : MonoBehaviour
         button.onClick.RemoveListener(onClick);
         button.onClick.AddListener(onClick);
 
-        EnsureButtonBackground(buttonTransform);
-        EnsureButtonLabel(buttonTransform, label);
+        RemoveGeneratedButtonAdditions(buttonTransform);
     }
 
-    private void EnsureButtonBackground(Transform buttonTransform)
+    private void RemoveGeneratedButtonAdditions(Transform buttonTransform)
     {
         var background = buttonTransform.Find("VisibleBackground");
-        if (background == null)
-        {
-            var bgObj = new GameObject("VisibleBackground");
-            bgObj.transform.SetParent(buttonTransform, false);
-            bgObj.transform.SetAsFirstSibling();
-
-            var bgImage = bgObj.AddComponent<Image>();
-            bgImage.color = new Color(0.12f, 0.12f, 0.12f, 0.85f);
-            bgImage.raycastTarget = false;
-
-            var bgRect = bgObj.GetComponent<RectTransform>();
-            bgRect.anchorMin = Vector2.zero;
-            bgRect.anchorMax = Vector2.one;
-            bgRect.offsetMin = Vector2.zero;
-            bgRect.offsetMax = Vector2.zero;
-        }
-    }
-
-    private void EnsureButtonLabel(Transform buttonTransform, string label)
-    {
         var labelTransform = buttonTransform.Find("Label");
-        Text labelText;
-        if (labelTransform == null)
-        {
-            var labelObj = new GameObject("Label");
-            labelObj.transform.SetParent(buttonTransform, false);
-            labelText = labelObj.AddComponent<Text>();
-            labelText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-            labelText.fontSize = 24;
-            labelText.color = Color.white;
-            labelText.alignment = TextAnchor.MiddleCenter;
-            labelText.raycastTarget = false;
 
-            var labelRect = labelObj.GetComponent<RectTransform>();
-            labelRect.anchorMin = Vector2.zero;
-            labelRect.anchorMax = Vector2.one;
-            labelRect.offsetMin = Vector2.zero;
-            labelRect.offsetMax = Vector2.zero;
-        }
-        else
-        {
-            labelText = labelTransform.GetComponent<Text>();
-        }
+        if (background != null)
+            Destroy(background.gameObject);
 
-        if (labelText != null)
-            labelText.text = label;
+        if (labelTransform != null && labelTransform.GetComponent<Text>() != null)
+            Destroy(labelTransform.gameObject);
     }
 
     private void CreateLegacyUI()

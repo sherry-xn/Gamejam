@@ -94,6 +94,7 @@ public class PlayerController : MonoBehaviour
     private bool wasRunning;
     private int runFrameIndex;
     private float runFrameTimer;
+    private Vector3 interactionIconWorldOffset;
 
     public int CurrentHealth { get; private set; }
     public int CurrentKey { get; private set; }
@@ -104,6 +105,10 @@ public class PlayerController : MonoBehaviour
         Input = GetComponent<PlayerInput>();
         Rigidbody = GetComponent<Rigidbody2D>();
         InteractionIcon = transform.Find("InteractionIcon");
+        if (InteractionIcon != null)
+        {
+            interactionIconWorldOffset = InteractionIcon.localPosition;
+        }
         CacheAnimationReferences();
         // Dynamic + gravity 0：与静态 Collider 正常阻挡（Kinematic 默认不碰静态体）。
         Rigidbody.bodyType = RigidbodyType2D.Dynamic;
@@ -189,6 +194,17 @@ public class PlayerController : MonoBehaviour
         MovePlayer();
         RotatePlayer();
         // ClampToCamera();
+    }
+
+    private void LateUpdate()
+    {
+        if (InteractionIcon == null)
+        {
+            return;
+        }
+
+        InteractionIcon.position = transform.position + interactionIconWorldOffset;
+        InteractionIcon.rotation = Quaternion.identity;
     }
 
 

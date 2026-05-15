@@ -113,6 +113,7 @@ public class StoryPanel : MonoBehaviour
     {
         if (instance == null) return;
         instance.textComponent.text = text;
+        instance.ApplyLayout();
         instance.panelRoot.SetActive(true);
         instance.currentPlayer = player;
         instance.isShowing = true;
@@ -128,5 +129,37 @@ public class StoryPanel : MonoBehaviour
         isShowing = false;
         if (currentPlayer != null) currentPlayer.Input.EnablePlayerMoveInput();
         currentPlayer = null;
+    }
+
+    private void ApplyLayout()
+    {
+        if (panelRoot != null)
+        {
+            var rt = panelRoot.GetComponent<RectTransform>();
+            rt.anchorMin = anchorMin;
+            rt.anchorMax = anchorMax;
+            rt.pivot = pivot;
+            rt.anchoredPosition = anchoredPosition;
+            rt.sizeDelta = panelSize;
+
+            var bg = panelRoot.GetComponent<Image>();
+            bg.color = bgColor;
+        }
+
+        if (textComponent != null)
+        {
+            textComponent.fontSize = fontSize;
+            textComponent.color = textColor;
+            textComponent.alignment = textAlignment;
+
+            var textRt = textComponent.GetComponent<RectTransform>();
+            textRt.offsetMin = new Vector2(textPadding.x, textPadding.w);
+            textRt.offsetMax = new Vector2(-textPadding.z, -textPadding.y);
+        }
+    }
+
+    private void OnValidate()
+    {
+        ApplyLayout();
     }
 }

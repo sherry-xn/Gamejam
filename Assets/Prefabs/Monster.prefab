@@ -377,7 +377,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   data:
     moveSpeed: 25
-    trackingRange: 200
+    trackingRange: 20
     attackRange: 1.5
     attackDamage: 1
     attackCooldown: 1.5

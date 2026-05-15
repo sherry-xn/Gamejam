@@ -32,8 +32,9 @@ public class MonsterNavigationSetup : EditorWindow
         
         // 碰撞检测设置
         gridGraph.collision.use2D = true;
-        gridGraph.collision.diameter = 0.5f;
+        gridGraph.collision.diameter = 4.5f;
         gridGraph.collision.height = 1f;
+        gridGraph.cutCorners = false;
         
         // 碰撞检测层 - 检测 Default(0) 和 Obstacle(6) 层
         gridGraph.collision.mask = (1 << 0) | (1 << 6);

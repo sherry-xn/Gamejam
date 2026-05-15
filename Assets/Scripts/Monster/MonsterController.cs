@@ -56,7 +56,9 @@ public class MonsterController : MonoBehaviour
     private float bgmNearDistance = 15f;
 
     private const int MaxWanderPointAttempts = 12;
+    private const int MaxGlobalWanderPointAttempts = 32;
     private const float MinWanderPointDistance = 1f;
+    private const float NavGraphClearancePadding = 0.1f;
 
     private AIPath aiPath;
     private Seeker seeker;
@@ -110,6 +112,7 @@ public class MonsterController : MonoBehaviour
             movementBlockMask = LayerMask.GetMask("Default", "Obstacle");
         }
 
+        EnsureNavigationGraphClearance();
         SwitchToWandering();
     }
 
@@ -256,6 +259,8 @@ public class MonsterController : MonoBehaviour
 
         if (currentState != MonsterState.Wandering) return;
 
+        CheckForDoor(GetCurrentMoveDirection());
+
         bool reachedWanderTarget = hasWanderTarget && !IsFollowingPath();
         if ((!hasWanderTarget || reachedWanderTarget) && Time.time - lastWanderTime >= data.wanderInterval)
         {
@@ -265,6 +270,17 @@ public class MonsterController : MonoBehaviour
     }
 
     private void SetNewWanderPoint()
+    {
+        if (TryGetGlobalWanderPoint(out Vector3 globalTarget))
+        {
+            SetWanderTarget(globalTarget);
+            return;
+        }
+
+        SetLocalWanderPoint();
+    }
+
+    private void SetLocalWanderPoint()
     {
         for (int i = 0; i < MaxWanderPointAttempts; i++)
         {
@@ -290,14 +306,70 @@ public class MonsterController : MonoBehaviour
                 continue;
             }
 
-            wanderTarget = walkableTarget;
-            hasWanderTarget = true;
-            RequestPath(wanderTarget);
+            SetWanderTarget(walkableTarget);
             return;
         }
 
         hasWanderTarget = false;
         ClearCurrentPath();
+    }
+
+    private bool TryGetGlobalWanderPoint(out Vector3 target)
+    {
+        target = transform.position;
+        if (AstarPath.active == null || AstarPath.active.data == null)
+        {
+            return false;
+        }
+
+        NNInfo currentNearest = AstarPath.active.GetNearest(transform.position, NearestNodeConstraint.Walkable);
+        GraphNode currentNode = currentNearest.node;
+        if (currentNode == null || !currentNode.Walkable)
+        {
+            return false;
+        }
+
+        uint currentArea = currentNode.Area;
+        for (int i = 0; i < MaxGlobalWanderPointAttempts; i++)
+        {
+            GraphNode selectedNode = null;
+            int eligibleCount = 0;
+            AstarPath.active.data.GetNodes(node =>
+            {
+                if (node == null || !node.Walkable || node.Area != currentArea) return;
+
+                Vector3 nodePosition = (Vector3)node.position;
+                if (Vector2.Distance(transform.position, nodePosition) < MinWanderPointDistance) return;
+
+                eligibleCount++;
+                if (Random.Range(0, eligibleCount) == 0)
+                {
+                    selectedNode = node;
+                }
+            });
+
+            if (selectedNode == null)
+            {
+                return false;
+            }
+
+            Vector3 candidate = selectedNode.RandomPointOnSurface();
+            candidate.z = transform.position.z;
+            if (IsPositionClear(candidate))
+            {
+                target = candidate;
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private void SetWanderTarget(Vector3 target)
+    {
+        wanderTarget = target;
+        hasWanderTarget = true;
+        RequestPath(wanderTarget);
     }
 
     private void RequestPathToNearestWalkable(Vector3 target)
@@ -447,6 +519,15 @@ public class MonsterController : MonoBehaviour
         if (Time.time - lastBlockedRepathTime < blockedRepathInterval) return;
 
         lastBlockedRepathTime = Time.time;
+        if (currentState == MonsterState.Wandering)
+        {
+            hasWanderTarget = false;
+            ClearCurrentPath();
+            lastWanderTime = Time.time - data.wanderInterval;
+            SetNewWanderPoint();
+            return;
+        }
+
         ClearCurrentPath(false);
         RequestPathToNearestWalkable(currentDestination);
     }
@@ -483,6 +564,38 @@ public class MonsterController : MonoBehaviour
     private bool IsMoving()
     {
         return IsFollowingPath() || pathPending;
+    }
+
+    private Vector2 GetCurrentMoveDirection()
+    {
+        if (IsFollowingPath())
+        {
+            Vector2 direction = (Vector2)(currentPath[currentWaypoint] - transform.position);
+            if (direction.sqrMagnitude > 0.001f)
+            {
+                return direction.normalized;
+            }
+        }
+
+        if (hasDestination)
+        {
+            Vector2 direction = (Vector2)(currentDestination - transform.position);
+            if (direction.sqrMagnitude > 0.001f)
+            {
+                return direction.normalized;
+            }
+        }
+
+        if (player != null)
+        {
+            Vector2 direction = (Vector2)(player.position - transform.position);
+            if (direction.sqrMagnitude > 0.001f)
+            {
+                return direction.normalized;
+            }
+        }
+
+        return transform.right;
     }
 
     private void ClearCurrentPath()
@@ -523,6 +636,43 @@ public class MonsterController : MonoBehaviour
         walkablePoint = nearest.position;
         walkablePoint.z = transform.position.z;
         return true;
+    }
+
+    private void EnsureNavigationGraphClearance()
+    {
+        if (AstarPath.active == null || AstarPath.active.data == null || bodyCollider == null)
+        {
+            return;
+        }
+
+        Bounds bounds = bodyCollider.bounds;
+        float requiredWorldDiameter = Mathf.Max(bounds.size.x, bounds.size.y) + NavGraphClearancePadding;
+        bool graphChanged = false;
+
+        foreach (NavGraph graph in AstarPath.active.data.graphs)
+        {
+            if (graph is GridGraph gridGraph)
+            {
+                float nodeSize = Mathf.Max(0.01f, gridGraph.nodeSize);
+                float requiredGraphDiameter = requiredWorldDiameter / nodeSize;
+                if (gridGraph.collision.diameter < requiredGraphDiameter)
+                {
+                    gridGraph.collision.diameter = requiredGraphDiameter;
+                    graphChanged = true;
+                }
+
+                if (gridGraph.cutCorners)
+                {
+                    gridGraph.cutCorners = false;
+                    graphChanged = true;
+                }
+            }
+        }
+
+        if (graphChanged)
+        {
+            AstarPath.active.Scan();
+        }
     }
 
     private bool IsPositionClear(Vector3 position)
@@ -578,6 +728,14 @@ public class MonsterController : MonoBehaviour
         if (player == null) return;
 
         Vector2 direction = ((Vector2)player.position - (Vector2)transform.position).normalized;
+        CheckForDoor(direction);
+    }
+
+    private void CheckForDoor(Vector2 direction)
+    {
+        if (direction.sqrMagnitude <= 0.001f) return;
+        direction.Normalize();
+
         Collider2D[] hits = Physics2D.OverlapCircleAll(
             transform.position,
             doorDetectionRange,

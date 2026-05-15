@@ -14,7 +14,7 @@ public class PlayerVisionMaskSystem : MonoBehaviour
     [SerializeField, Range(0f, 1f)] private float darknessAlpha = 0.9f;
 
     [Header("近身可视")]
-    [SerializeField, Min(0f)] private float innerRadius = 0.12f;
+    [SerializeField, Min(0f)] private float innerRadius = 0.06f;
 
     [Header("手电筒锥形视野")]
     [SerializeField, Min(0f)] private float coneRange = 0.75f;
@@ -30,7 +30,7 @@ public class PlayerVisionMaskSystem : MonoBehaviour
     [SerializeField, Range(1f, 179f)] private float debugMaxConeAngle = 160f;
 
     [Header("边缘过渡")]
-    [SerializeField, Min(0.001f)] private float edgeSoftness = 0.05f;
+    [SerializeField, Min(0.001f)] private float edgeSoftness = 0.03f;
     [SerializeField, Min(0.001f)] private float coneAngleSoftness = 0.05f;
 
     private const string ShaderName = "Hidden/PlayerVisionMask";

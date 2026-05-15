@@ -234,7 +234,7 @@ MonoBehaviour:
   - key: 24
     sound:
       clip: {fileID: 8300000, guid: e785abdb89cb73d4bbfdc20b7f94787d, type: 3}
-      volume: 1
+      volume: 0.45
       pitchVariance: 0
       loop: 0
   - key: 25

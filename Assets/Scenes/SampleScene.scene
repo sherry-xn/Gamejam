@@ -1607,7 +1607,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 1
-  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_BackGroundColor: {r: 0, g: 0, b: 0, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -2588,6 +2588,8 @@ MonoBehaviour:
   currentRoom: 
   switchToPlayerRoomOnStart: 0
   controlRoomCameraPriorities: 0
+  useSingleFollowCameraOnly: 1
+  disableConfinerInSingleFollowMode: 1
   constrainMainCameraAfterDoor: 1
   roomsUsingMainCameraRoomBounds:
   - Corridor1
@@ -3041,6 +3043,18 @@ PrefabInstance:
     - target: {fileID: 3836115281246428902, guid: 45aa167b2dfbcfe47b7e61ba37ee283e, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5245005093201067014, guid: 45aa167b2dfbcfe47b7e61ba37ee283e, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1.9220928
+      objectReference: {fileID: 0}
+    - target: {fileID: 5245005093201067014, guid: 45aa167b2dfbcfe47b7e61ba37ee283e, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 50.997
+      objectReference: {fileID: 0}
+    - target: {fileID: 5245005093201067014, guid: 45aa167b2dfbcfe47b7e61ba37ee283e, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -22.96
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -5021,7 +5035,7 @@ MonoBehaviour:
   - m_Script
   m_LockStageInInspector: 
   m_StreamingVersion: 20170927
-  m_Priority: 10
+  m_Priority: 100
   m_StandbyUpdate: 2
   m_LookAt: {fileID: 1883391182}
   m_Follow: {fileID: 1883391182}

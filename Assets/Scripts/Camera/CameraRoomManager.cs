@@ -1,5 +1,6 @@
 using UnityEngine;
 using Cinemachine;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.SceneManagement;
 
@@ -23,7 +24,7 @@ public class CameraRoomManager : MonoBehaviour
     [SerializeField, Tooltip("Use a room-local confiner for selected rooms after a door crossing. This avoids narrow global CameraBounds dead zones without letting RoomBounds detection move the camera early.")]
     private bool constrainMainCameraAfterDoor = true;
     [SerializeField, Tooltip("Room names that should use their RoomBounds on the normal player-follow camera after crossing a door.")]
-    private string[] roomsUsingMainCameraRoomBounds = { "Corridor1", "Hall", "Corridor2", "Classroom", "Toilet", "Dorm" };
+    private string[] roomsUsingMainCameraRoomBounds = { "Corridor1", "Hall", "Corridor2", "Corridor3", "Classroom", "Toilet", "Dorm", "Guardroom" };
 
     [Header("Room Camera Auto Setup")]
     [SerializeField, Tooltip("Automatically place configured room cameras at matching RoomBounds centers and clear Follow/LookAt.")]
@@ -40,6 +41,8 @@ public class CameraRoomManager : MonoBehaviour
     private string roomKeyHintFormat = "这个房间里有 {0} 把钥匙";
     [SerializeField, Tooltip("Also detect the player's current room from RoomBounds, so hints still work if a door trigger misses.")]
     private bool detectPlayerRoomForKeyHint = true;
+    [SerializeField, Tooltip("Allow RoomBounds polling to retarget the main follow camera confiner. Keep off so camera bounds only change through door triggers.")]
+    private bool updateMainCameraConfinerFromRoomPolling = false;
     [SerializeField, Min(0.05f)]
     private float roomKeyHintCheckInterval = 0.15f;
 
@@ -65,6 +68,8 @@ public class CameraRoomManager : MonoBehaviour
     {
         cameraMap = BuildCameraMap(roomCameras);
         CachePlayerTransform();
+        InitializeMainCameraAtPlayer();
+        StartCoroutine(InitializeMainCameraAfterSceneStart());
 
         if (switchToPlayerRoomOnStart)
             SwitchToPlayerRoomAtStart();
@@ -234,7 +239,8 @@ public class CameraRoomManager : MonoBehaviour
             return;
 
         SwitchRoom(playerRoom, false);
-        UpdateMainCameraConfiner(playerRoom);
+        if (updateMainCameraConfinerFromRoomPolling)
+            UpdateMainCameraConfiner(playerRoom);
     }
 
     private void CachePlayerTransform()
@@ -318,11 +324,57 @@ public class CameraRoomManager : MonoBehaviour
         string playerRoom = FindRoomAtPosition(playerTransform.position);
         if (!string.IsNullOrEmpty(playerRoom))
         {
-            UpdateMainCameraConfiner(playerRoom);
+            UpdateMainCameraConfiner(playerRoom, true);
         }
     }
 
+    private void InitializeMainCameraAtPlayer()
+    {
+        CachePlayerTransform();
+        if (playerTransform == null)
+            return;
+
+        CacheMainFollowCamera();
+        if (mainFollowCamera == null)
+            return;
+
+        Vector3 cameraPosition = mainFollowCamera.transform.position;
+        cameraPosition.x = playerTransform.position.x;
+        cameraPosition.y = playerTransform.position.y;
+        mainFollowCamera.transform.position = cameraPosition;
+        mainFollowCamera.PreviousStateIsValid = false;
+
+        var mainCamera = Camera.main;
+        if (mainCamera != null)
+        {
+            Vector3 mainCameraPosition = mainCamera.transform.position;
+            mainCameraPosition.x = playerTransform.position.x;
+            mainCameraPosition.y = playerTransform.position.y;
+            mainCamera.transform.position = mainCameraPosition;
+        }
+
+        if (mainFollowCameraConfiner != null)
+            mainFollowCameraConfiner.InvalidateCache();
+    }
+
+    private IEnumerator InitializeMainCameraAfterSceneStart()
+    {
+        for (int i = 0; i < 8; i++)
+        {
+            yield return null;
+            InitializeMainCameraAtPlayer();
+        }
+
+        yield return new WaitForEndOfFrame();
+        InitializeMainCameraAtPlayer();
+    }
+
     private void UpdateMainCameraConfiner(string roomName)
+    {
+        UpdateMainCameraConfiner(roomName, false);
+    }
+
+    private void UpdateMainCameraConfiner(string roomName, bool forceRoomBounds)
     {
         if (!constrainMainCameraAfterDoor)
             return;
@@ -332,7 +384,7 @@ public class CameraRoomManager : MonoBehaviour
             return;
 
         Collider2D boundary = defaultMainCameraBounds;
-        if (ShouldUseRoomBoundsForMainCamera(roomName))
+        if (forceRoomBounds || ShouldUseRoomBoundsForMainCamera(roomName))
         {
             var boundsByRoom = BuildRoomBoundsMap();
             if (!boundsByRoom.TryGetValue(roomName, out var roomBoundary) || roomBoundary == null)
@@ -346,6 +398,8 @@ public class CameraRoomManager : MonoBehaviour
 
         mainFollowCameraConfiner.m_BoundingShape2D = boundary;
         mainFollowCameraConfiner.InvalidateCache();
+        if (mainFollowCamera != null)
+            mainFollowCamera.PreviousStateIsValid = false;
     }
 
     private void CacheMainFollowCamera()

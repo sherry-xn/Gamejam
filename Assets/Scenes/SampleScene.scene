@@ -1836,7 +1836,7 @@ Transform:
   m_GameObject: {fileID: 519420028}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 4.706838, y: -0.4271, z: -10}
+  m_LocalPosition: {x: 4.7059393, y: -0.4271, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -4700,7 +4700,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   darknessColor: {r: 0, g: 0, b: 0, a: 1}
-  darknessAlpha: 1
+  darknessAlpha: 0.95
   innerRadius: 0.06
   coneRange: 0.96
   coneAngle: 45
@@ -6958,9 +6958,17 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1883391182}
     - target: {fileID: 2247988542786482313, guid: 0023146c98a53f542ba2765c9dd2b6b0, type: 3}
+      propertyPath: data.moveSpeed
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 2247988542786482313, guid: 0023146c98a53f542ba2765c9dd2b6b0, type: 3}
       propertyPath: playerController
       value: 
       objectReference: {fileID: 1883391180}
+    - target: {fileID: 2247988542786482313, guid: 0023146c98a53f542ba2765c9dd2b6b0, type: 3}
+      propertyPath: data.trackingRange
+      value: 15
+      objectReference: {fileID: 0}
     - target: {fileID: 3976948024598633197, guid: 0023146c98a53f542ba2765c9dd2b6b0, type: 3}
       propertyPath: m_LocalPosition.x
       value: 68.74
